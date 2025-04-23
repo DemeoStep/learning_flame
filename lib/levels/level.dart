@@ -29,12 +29,6 @@ class Level extends World {
 
     add(player);
 
-    // add(
-    //   Cannon(
-    //     startPosition: Vector2(player.position.x + 47, player.position.y - 10),
-    //   ),
-    // );
-
     return super.onLoad();
   }
 }
