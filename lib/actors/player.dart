@@ -82,10 +82,17 @@ class Player extends PositionComponent
 
     switch (flyDirection) {
       case FlyDirection.left:
-        position.add(Vector2(-flySpeed * dt, 0));
-
+        if (position.x < 0) {
+          flyDirection = FlyDirection.none;
+        } else {
+          position.add(Vector2(-flySpeed * dt, 0));
+        }
       case FlyDirection.right:
-        position.add(Vector2(flySpeed * dt, 0));
+        if (position.x > 500) {
+          flyDirection = FlyDirection.none;
+        } else {
+          position.add(Vector2(flySpeed * dt, 0));
+        }
       case FlyDirection.none:
         break;
     }
