@@ -5,37 +5,40 @@ import 'package:flame_rive/flame_rive.dart';
 import 'package:flutter/services.dart';
 import 'package:learning_flame/fly.dart';
 import 'package:learning_flame/levels/level.dart';
+import 'package:collection/collection.dart';
 
 import 'cannon.dart';
 
 class Player extends PositionComponent
     with HasGameReference<FlyGame>, KeyboardHandler {
-  late final RiveComponent fly;
+  final Artboard planeArtBoard;
+  final Vector2 planeArtBoardSize;
+
+  final Artboard cannonArtBoard;
+  final Vector2 cannonArtBoardSize;
+
+  late final RiveComponent plane;
+
   bool firing = false;
 
   FlyDirection flyDirection = FlyDirection.none;
   final flySpeed = 100;
   final startPosition = Vector2(250, 490);
 
+  Player({
+    required this.planeArtBoard,
+    required this.planeArtBoardSize,
+    required this.cannonArtBoard,
+    required this.cannonArtBoardSize,
+  });
+
   @override
   FutureOr<void> onLoad() async {
     position = startPosition;
 
-    final flyArtboard = await loadArtboard(
-      RiveFile.asset('assets/rive/fly.riv'),
-      artboardName: 'Plane',
-    );
+    plane = RiveComponent(artboard: planeArtBoard, size: planeArtBoardSize);
 
-    final controller = StateMachineController.fromArtboard(
-      flyArtboard,
-      "FlySM",
-    );
-
-    flyArtboard.addController(controller!);
-
-    fly = RiveComponent(artboard: flyArtboard, size: Vector2.all(100));
-
-    add(fly);
+    add(plane);
 
     add(
       KeyboardListenerComponent(
@@ -89,8 +92,26 @@ class Player extends PositionComponent
   }
 
   void _spawnCannon() {
-    game.children.whereType<Level>().forEach(
-      (l) => l.add(Cannon(startPosition: Vector2(position.x + 48, position.y))),
+    final level = game.children.whereType<Level>().first;
+
+    final firedCannons = level.children.whereType<Cannon>().sortedBy(
+      (c) => c.firedAtTimestamp,
+    );
+
+    if (firedCannons.isNotEmpty) {
+      if (DateTime.now().millisecondsSinceEpoch -
+              firedCannons.last.firedAtTimestamp <
+          firedCannons.last.reloadTime) {
+        return;
+      }
+    }
+
+    level.add(
+      Cannon(
+        startPosition: Vector2(position.x + 48, position.y),
+        cannonArtBoard: cannonArtBoard,
+        cannonArtBoardSize: cannonArtBoardSize,
+      ),
     );
   }
 

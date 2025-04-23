@@ -1,35 +1,32 @@
 import 'package:flame/components.dart';
 import 'package:flame_rive/flame_rive.dart';
-import 'package:flutter/services.dart';
 import 'package:learning_flame/fly.dart';
+import 'package:learning_flame/levels/level.dart';
 
-import '../levels/level.dart';
+class Cannon extends PositionComponent with HasGameReference<FlyGame> {
+  final Artboard cannonArtBoard;
+  final Vector2 cannonArtBoardSize;
 
-class Cannon extends PositionComponent
-    with HasGameReference<FlyGame>, KeyboardHandler {
   late final RiveComponent cannon;
-  final cannonSpeed = 50;
+  final cannonSpeed = 400;
+  int reloadTime = 500;
+
+  late final int firedAtTimestamp;
+
   late final Vector2 startPosition;
 
-  Cannon({required this.startPosition});
+  Cannon({
+    required this.startPosition,
+    required this.cannonArtBoard,
+    required this.cannonArtBoardSize,
+  });
 
   @override
   Future<void> onLoad() async {
     position = startPosition;
+    firedAtTimestamp = DateTime.now().millisecondsSinceEpoch;
 
-    final cannonArtboard = await loadArtboard(
-      RiveFile.asset('assets/rive/fly.riv'),
-      artboardName: 'Cannon',
-    );
-
-    final controller = StateMachineController.fromArtboard(
-      cannonArtboard,
-      "CannonSM",
-    );
-
-    cannonArtboard.addController(controller!);
-
-    cannon = RiveComponent(artboard: cannonArtboard, size: Vector2(5, 10));
+    cannon = RiveComponent(artboard: cannonArtBoard, size: cannonArtBoardSize);
 
     add(cannon);
   }
@@ -44,10 +41,5 @@ class Cannon extends PositionComponent
       position.add(Vector2(0, -cannonSpeed * dt));
     }
     super.update(dt);
-  }
-
-  @override
-  bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    return true;
   }
 }

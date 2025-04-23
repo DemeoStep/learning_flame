@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:learning_flame/fly.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'consts.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -16,7 +18,7 @@ void main() async {
       await windowManager.ensureInitialized();
 
       WindowOptions windowOptions = WindowOptions(
-        size: Size(600, 600),
+        size: Consts.windowSize,
         center: true,
         backgroundColor: Colors.transparent,
         skipTaskbar: false,
