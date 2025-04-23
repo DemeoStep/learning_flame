@@ -4,10 +4,14 @@ import 'package:flame/components.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:flutter/services.dart';
 import 'package:learning_flame/fly.dart';
+import 'package:learning_flame/levels/level.dart';
+
+import 'cannon.dart';
 
 class Player extends PositionComponent
     with HasGameReference<FlyGame>, KeyboardHandler {
   late final RiveComponent fly;
+  bool firing = false;
 
   FlyDirection flyDirection = FlyDirection.none;
   final flySpeed = 100;
@@ -36,6 +40,10 @@ class Player extends PositionComponent
     add(
       KeyboardListenerComponent(
         keyUp: {
+          LogicalKeyboardKey.space: (keysPressed) {
+            firing = false;
+            return false;
+          },
           LogicalKeyboardKey.arrowLeft: (keysPressed) {
             if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
               flyDirection = FlyDirection.right;
@@ -54,6 +62,10 @@ class Player extends PositionComponent
           },
         },
         keyDown: {
+          LogicalKeyboardKey.space: (keysPressed) {
+            firing = true;
+            return false;
+          },
           LogicalKeyboardKey.arrowLeft: (keysPressed) {
             if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
               flyDirection = FlyDirection.right;
@@ -76,10 +88,17 @@ class Player extends PositionComponent
     return super.onLoad();
   }
 
+  void _spawnCannon() {
+    game.children.whereType<Level>().forEach(
+      (l) => l.add(Cannon(startPosition: Vector2(position.x + 48, position.y))),
+    );
+  }
+
   @override
   update(double dt) {
-    super.update(dt);
-
+    if (firing) {
+      _spawnCannon();
+    }
     switch (flyDirection) {
       case FlyDirection.left:
         if (position.x < 0) {
@@ -96,6 +115,8 @@ class Player extends PositionComponent
       case FlyDirection.none:
         break;
     }
+
+    super.update(dt);
   }
 
   @override

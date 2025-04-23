@@ -6,6 +6,7 @@ import 'package:learning_flame/actors/player.dart';
 
 class Level extends World {
   late final RiveComponent space;
+  late final Player player;
 
   @override
   FutureOr<void> onLoad() async {
@@ -22,10 +23,18 @@ class Level extends World {
     spaceArtboard.addController(controller!);
 
     space = RiveComponent(artboard: spaceArtboard, size: Vector2.all(600));
+    player = Player();
 
     add(space);
 
-    add(Player());
+    add(player);
+
+    // add(
+    //   Cannon(
+    //     startPosition: Vector2(player.position.x + 47, player.position.y - 10),
+    //   ),
+    // );
+
     return super.onLoad();
   }
 }
