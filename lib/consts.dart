@@ -16,7 +16,7 @@ class Consts {
   static const String asteroidStateMachineName = 'AsteroidSM';
 
   static Vector2 spaceSize = Vector2(600, 600);
-  static Vector2 planeSize = Vector2(100, 100);
+  static Vector2 planeSize = Vector2(60, 100);
   static Vector2 cannonSize = Vector2(5, 10);
   static Vector2 asteroidSize = Vector2(30, 30);
 }

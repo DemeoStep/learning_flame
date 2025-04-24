@@ -2,17 +2,13 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame_rive/flame_rive.dart';
+import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/levels/level.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'consts.dart';
-
 class FlyGame extends FlameGame
     with HasKeyboardHandlerComponents, WindowListener, HasCollisionDetection {
-  late final Artboard spaceArtBoard;
-  late final Artboard planeArtBoard;
   late final Artboard cannonArtBoard;
-  late final Artboard asteroidArtBoard;
 
   @override
   Future<void> onLoad() async {
@@ -56,10 +52,7 @@ class FlyGame extends FlameGame
       ),
     ]);
 
-    this.spaceArtBoard = spaceArtBoard;
-    this.planeArtBoard = planeArtBoard;
     this.cannonArtBoard = cannonArtBoard;
-    this.asteroidArtBoard = asteroidArtBoard;
 
     world = Level();
   }
@@ -72,7 +65,7 @@ class FlyGame extends FlameGame
 
   Future<Artboard> _loadRiveComponent({
     required String artBoardName,
-    required stateMachineName,
+    required String stateMachineName,
   }) async {
     final artBoard = await loadArtboard(
       RiveFile.asset(Consts.mainRiveFilePath),

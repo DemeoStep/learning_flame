@@ -5,11 +5,10 @@ import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/fly_game.dart';
 
 class Cannon extends PositionComponent with HasGameReference<FlyGame> {
-  final Artboard cannonArtBoard;
-
   late final RiveComponent cannon;
-  final cannonSpeed = 400;
-  int reloadTime = 100;
+
+  final cannonSpeed = 200;
+  int reloadTime = 200;
 
   late final int firedAtTimestamp;
 
@@ -17,14 +16,23 @@ class Cannon extends PositionComponent with HasGameReference<FlyGame> {
 
   late final RectangleHitbox hitBox;
 
-  Cannon({required this.startPosition, required this.cannonArtBoard});
+  Cannon({required this.startPosition});
 
   @override
   Future<void> onLoad() async {
     position = startPosition;
     firedAtTimestamp = DateTime.now().millisecondsSinceEpoch;
 
-    cannon = RiveComponent(artboard: cannonArtBoard, size: Consts.cannonSize);
+    final artBoard = game.cannonArtBoard;
+
+    final controller = StateMachineController.fromArtboard(
+      game.cannonArtBoard,
+      Consts.cannonStateMachineName,
+    );
+
+    artBoard.addController(controller!);
+
+    cannon = RiveComponent(artboard: artBoard);
 
     hitBox = RectangleHitbox(size: cannon.size);
 

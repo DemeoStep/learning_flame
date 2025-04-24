@@ -5,20 +5,31 @@ import 'package:collection/collection.dart';
 import 'package:flame/components.dart' hide Plane;
 import 'package:flame_rive/flame_rive.dart';
 import 'package:flutter/services.dart';
+import 'package:learning_flame/actors/actor.dart';
 import 'package:learning_flame/actors/asteroid.dart';
 import 'package:learning_flame/actors/cannon.dart';
 import 'package:learning_flame/actors/plane.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/fly_game.dart';
+import 'package:learning_flame/rive_component_loader_mixin.dart';
 
-class Level extends World with HasGameReference<FlyGame>, KeyboardHandler {
+class Level extends World
+    with HasGameReference<FlyGame>, KeyboardHandler
+    implements Actor {
+  @override
+  final String artBoardName = Consts.spaceArtBoardName;
+  @override
+  final String stateMachineName = Consts.spaceStateMachineName;
+  @override
+  final Vector2 actorSize = Consts.spaceSize;
+
   late final Plane plane;
 
   late final RiveComponent space;
 
   @override
   FutureOr<void> onLoad() async {
-    space = RiveComponent(artboard: game.spaceArtBoard, size: Consts.spaceSize);
+    space = await loadRiveComponent();
 
     plane = Plane();
 
@@ -101,8 +112,10 @@ class Level extends World with HasGameReference<FlyGame>, KeyboardHandler {
 
     add(
       Cannon(
-        startPosition: Vector2(plane.position.x + 48, plane.position.y),
-        cannonArtBoard: game.cannonArtBoard,
+        startPosition: Vector2(
+          plane.position.x - 2 + Consts.planeSize.x / 2,
+          plane.position.y,
+        ),
       ),
     );
   }
@@ -113,7 +126,7 @@ class Level extends World with HasGameReference<FlyGame>, KeyboardHandler {
     );
 
     if (firedAsteroids.isNotEmpty) {
-      if (DateTime.now().millisecondsSinceEpoch -
+      if (DateTime.now().microsecondsSinceEpoch -
               firedAsteroids.last.firedAtTimestamp <
           firedAsteroids.last.reloadTime) {
         return;
@@ -123,7 +136,6 @@ class Level extends World with HasGameReference<FlyGame>, KeyboardHandler {
     add(
       Asteroid(
         startPosition: Vector2(35 + Random().nextInt(500).toDouble(), 0),
-        asteroidArtBoard: game.asteroidArtBoard,
       ),
     );
   }
