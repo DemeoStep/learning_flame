@@ -1,42 +1,41 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_rive/flame_rive.dart';
-import 'package:learning_flame/fly.dart';
-import 'package:learning_flame/levels/level.dart';
+import 'package:learning_flame/consts.dart';
+import 'package:learning_flame/fly_game.dart';
 
 class Cannon extends PositionComponent with HasGameReference<FlyGame> {
   final Artboard cannonArtBoard;
-  final Vector2 cannonArtBoardSize;
 
   late final RiveComponent cannon;
   final cannonSpeed = 400;
-  int reloadTime = 500;
+  int reloadTime = 100;
 
   late final int firedAtTimestamp;
 
   late final Vector2 startPosition;
 
-  Cannon({
-    required this.startPosition,
-    required this.cannonArtBoard,
-    required this.cannonArtBoardSize,
-  });
+  late final RectangleHitbox hitBox;
+
+  Cannon({required this.startPosition, required this.cannonArtBoard});
 
   @override
   Future<void> onLoad() async {
     position = startPosition;
     firedAtTimestamp = DateTime.now().millisecondsSinceEpoch;
 
-    cannon = RiveComponent(artboard: cannonArtBoard, size: cannonArtBoardSize);
+    cannon = RiveComponent(artboard: cannonArtBoard, size: Consts.cannonSize);
+
+    hitBox = RectangleHitbox(size: cannon.size);
 
     add(cannon);
+    add(hitBox);
   }
 
   @override
   update(double dt) {
     if (position.y < 0) {
-      game.children.whereType<Level>().forEach((c) {
-        c.remove(this);
-      });
+      removeFromParent();
     } else {
       position.add(Vector2(0, -cannonSpeed * dt));
     }

@@ -2,14 +2,18 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame_rive/flame_rive.dart';
-import 'package:learning_flame/actors/player.dart';
 import 'package:learning_flame/levels/level.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'consts.dart';
 
 class FlyGame extends FlameGame
-    with HasKeyboardHandlerComponents, WindowListener {
+    with HasKeyboardHandlerComponents, WindowListener, HasCollisionDetection {
+  late final Artboard spaceArtBoard;
+  late final Artboard planeArtBoard;
+  late final Artboard cannonArtBoard;
+  late final Artboard asteroidArtBoard;
+
   @override
   Future<void> onLoad() async {
     await _worldInit();
@@ -52,18 +56,12 @@ class FlyGame extends FlameGame
       ),
     ]);
 
-    world = Level(
-      spaceArtBoard: spaceArtBoard,
-      artBoardSize: Consts.spaceSize,
-      player: Player(
-        planeArtBoard: planeArtBoard,
-        planeArtBoardSize: Consts.planeSize,
-        cannonArtBoard: cannonArtBoard,
-        cannonArtBoardSize: Consts.cannonSize,
-      ),
-      asteroidArtBoard: asteroidArtBoard,
-      asteroidArtBoardSize: Consts.asteroidSize,
-    );
+    this.spaceArtBoard = spaceArtBoard;
+    this.planeArtBoard = planeArtBoard;
+    this.cannonArtBoard = cannonArtBoard;
+    this.asteroidArtBoard = asteroidArtBoard;
+
+    world = Level();
   }
 
   @override

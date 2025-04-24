@@ -5,7 +5,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:learning_flame/fly.dart';
+import 'package:learning_flame/fly_game.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'consts.dart';
