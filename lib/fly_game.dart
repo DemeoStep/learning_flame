@@ -1,7 +1,9 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
+import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/levels/level.dart';
 import 'package:window_manager/window_manager.dart';
@@ -9,6 +11,9 @@ import 'package:window_manager/window_manager.dart';
 class FlyGame extends FlameGame
     with HasKeyboardHandlerComponents, WindowListener, HasCollisionDetection {
   late final Artboard cannonArtBoard;
+  final GameStatsCubit cubit;
+
+  FlyGame({required this.cubit});
 
   @override
   Future<void> onLoad() async {
@@ -23,7 +28,16 @@ class FlyGame extends FlameGame
 
     addAll([camera, world]);
 
+    await add(
+      FlameBlocProvider<GameStatsCubit, GameStatsState>(
+        create: () => cubit,
+        children: [world],
+      ),
+    );
+
     windowManager.addListener(this);
+
+    overlays.add('score');
     super.onLoad();
   }
 

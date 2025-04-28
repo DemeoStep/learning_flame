@@ -1,14 +1,19 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/actors/actor.dart';
 import 'package:learning_flame/actors/cannon.dart';
+import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/fly_game.dart';
 import 'package:learning_flame/rive_component_loader_mixin.dart';
 
 class Asteroid extends PositionComponent
-    with HasGameReference<FlyGame>, CollisionCallbacks
+    with
+        HasGameReference<FlyGame>,
+        CollisionCallbacks,
+        FlameBlocReader<GameStatsCubit, GameStatsState>
     implements Actor {
   @override
   final String artBoardName = Consts.asteroidArtBoardName;
@@ -60,6 +65,8 @@ class Asteroid extends PositionComponent
         .addListener(() {
           _resolveCollisions();
         });
+
+    super.onLoad();
   }
 
   @override
@@ -89,6 +96,8 @@ class Asteroid extends PositionComponent
         destroyTrigger.fire();
         component.removeFromParent();
         hitBox.removeFromParent();
+
+        bloc.updateScore();
 
         Future.delayed(const Duration(milliseconds: 250), () {
           removeFromParent();

@@ -39,6 +39,8 @@ dependencies:
   flame_rive: ^1.10.14
   window_manager: ^0.4.3
   collection: ^1.19.1
+  flame_bloc: ^1.12.12
+  flutter_bloc: ^9.1.0
 
 dev_dependencies:
   flutter_test:
