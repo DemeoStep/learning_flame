@@ -44,6 +44,7 @@ dependencies:
   flutter_svg: ^2.1.0
   freezed_annotation: ^3.0.0
   flame_audio: ^2.11.5
+  gap: ^3.0.1
 
 dev_dependencies:
   flutter_test:

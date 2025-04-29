@@ -12,7 +12,7 @@ class GameStatsCubit extends Cubit<GameStatsState> {
         planeSpeed: _calculatePlaneSpeed(score),
         cannonSpeed: _calculateCannonSpeed(score),
         cannonReloadTime: _calculateCannonReloadTime(score),
-        asteroidSpeed: _calculateAsteroidSpeed(score),
+        asteroidSpeed: _calculateAsteroidSpeed(),
         fireAtOnce: _calculateFireAtOnce(score),
       ),
     );
@@ -26,6 +26,7 @@ class GameStatsCubit extends Cubit<GameStatsState> {
         planeSpeed: _calculatePlaneSpeed(score),
         cannonSpeed: _calculateCannonSpeed(score),
         cannonReloadTime: _calculateCannonReloadTime(score),
+        asteroidSpeed: _calculateAsteroidSpeed(),
         fireAtOnce: _calculateFireAtOnce(score),
       ),
     );
@@ -66,8 +67,12 @@ class GameStatsCubit extends Cubit<GameStatsState> {
     return 200 - (score.clamp(0, 400) ~/ 10) * 10;
   }
 
-  int _calculateAsteroidSpeed(int score) {
-    return 100 + (score.clamp(0, 600) ~/ 5) * 5;
+  int _calculateAsteroidSpeed() {
+    final gamingTimeMinutes =
+        DateTime.now().millisecondsSinceEpoch -
+        state.gameStartTimestamp / 1000 / 60;
+
+    return 100 + (gamingTimeMinutes.clamp(0, 6) ~/ 10) * 10;
   }
 
   int _calculateFireAtOnce(int score) {
