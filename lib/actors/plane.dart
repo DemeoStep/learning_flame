@@ -6,6 +6,7 @@ import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/actors/actor.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
+import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/fly_game.dart';
 import 'package:learning_flame/rive_component_loader_mixin.dart';
@@ -24,6 +25,8 @@ class Plane extends PositionComponent
   final Vector2 actorSize = Consts.planeSize;
 
   late final RiveComponent plane;
+  late final RectangleHitbox hitBox;
+  late final SMITrigger hitTrigger;
 
   bool firing = false;
 
@@ -35,13 +38,24 @@ class Plane extends PositionComponent
   FutureOr<void> onLoad() async {
     position = startPosition;
 
-    plane = await loadRiveComponent();
+    final plane = await loadRiveComponent();
+
+    final controller = StateMachineController.fromArtboard(
+      plane.artboard,
+      stateMachineName,
+    );
+
+    hitTrigger = controller!.findSMI<SMITrigger>('Hit')!;
+
+    plane.artboard.addController(controller);
 
     add(plane);
 
     anchor = Anchor.topCenter;
 
-    add(RectangleHitbox());
+    hitBox = RectangleHitbox(size: plane.size);
+
+    add(hitBox);
 
     return super.onLoad();
   }

@@ -1,13 +1,32 @@
-part of 'game_stats_cubit.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class GameStatsState {
-  final int score;
-  final int planeSpeed;
-  final int cannonSpeed;
+part 'game_stats_state.freezed.dart';
 
-  GameStatsState({
-    this.score = 0,
-    this.planeSpeed = 100,
-    this.cannonSpeed = 100,
-  });
+@Freezed(toJson: false, fromJson: false)
+abstract class GameStatsState with _$GameStatsState {
+  factory GameStatsState({
+    @Default(0) int gameStartTimestamp,
+    @Default(0) int score,
+    @Default(3) int lives,
+    @Default(100) int planeSpeed,
+    @Default(3) int fireAtOnce,
+    @Default(100) int cannonSpeed,
+    @Default(200) int cannonReloadTime,
+    @Default(1) int asteroidCount,
+    @Default(100) int asteroidSpeed,
+  }) = _GameStatsState;
+
+  factory GameStatsState.empty() {
+    return GameStatsState(
+      gameStartTimestamp: DateTime.now().millisecondsSinceEpoch,
+      score: 0,
+      lives: 3,
+      planeSpeed: 100,
+      fireAtOnce: 3,
+      cannonSpeed: 100,
+      cannonReloadTime: 200,
+      asteroidCount: 1,
+      asteroidSpeed: 100,
+    );
+  }
 }

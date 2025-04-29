@@ -1,10 +1,15 @@
+import 'dart:math';
+
 import 'package:flame/collisions.dart';
-import 'package:flame/components.dart';
+import 'package:flame/components.dart' hide Plane;
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/actors/actor.dart';
 import 'package:learning_flame/actors/cannon.dart';
+import 'package:learning_flame/actors/plane.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
+import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/fly_game.dart';
 import 'package:learning_flame/rive_component_loader_mixin.dart';
@@ -24,23 +29,19 @@ class Asteroid extends PositionComponent
 
   late final RiveComponent asteroid;
 
-  final asteroidSpeed = 100;
   int reloadTime = 10000000;
 
-  late final Vector2 startPosition;
-  late final int firedAtTimestamp;
+  late int firedAtTimestamp;
 
   late final RectangleHitbox hitBox;
 
   final List<PositionComponent> collisionComponents = [];
 
-  late final SMITrigger destroyTrigger;
-
-  Asteroid({required this.startPosition});
+  late final SMIBool isDestroyed;
 
   @override
   Future<void> onLoad() async {
-    position = startPosition;
+    position = _startPosition();
     firedAtTimestamp = DateTime.now().microsecondsSinceEpoch;
 
     final asteroid = await loadRiveComponent();
@@ -50,7 +51,7 @@ class Asteroid extends PositionComponent
       stateMachineName,
     );
 
-    destroyTrigger = controller!.findSMI<SMITrigger>('destroy')!;
+    isDestroyed = controller!.findSMI<SMIBool>('isDestroyed')!;
 
     asteroid.artboard.addController(controller);
 
@@ -72,9 +73,13 @@ class Asteroid extends PositionComponent
   @override
   update(double dt) {
     if (position.y > Consts.windowSize.height + Consts.asteroidSize.y) {
-      removeFromParent();
+      if (!isDestroyed.value) {
+        bloc.decreaseScore();
+      }
+
+      position = _startPosition();
     } else {
-      position.add(Vector2(0, asteroidSpeed * dt));
+      position.add(Vector2(0, bloc.state.asteroidSpeed * dt));
     }
     super.update(dt);
   }
@@ -85,7 +90,8 @@ class Asteroid extends PositionComponent
     PositionComponent other,
   ) {
     super.onCollisionStart(intersectionPoints, other);
-    if (other is Cannon) {
+    if (other is Cannon || other is Plane) {
+      _destroyAsteroid();
       collisionComponents.add(other);
     }
   }
@@ -93,17 +99,28 @@ class Asteroid extends PositionComponent
   void _resolveCollisions() {
     for (final component in collisionComponents) {
       if (component is Cannon) {
-        destroyTrigger.fire();
         component.removeFromParent();
-        hitBox.removeFromParent();
-
-        bloc.updateScore();
-
-        Future.delayed(const Duration(milliseconds: 250), () {
-          removeFromParent();
-        });
+        bloc.increaseScore();
+      } else if (component is Plane) {
+        component.hitTrigger.fire();
+        bloc.decreaseLive();
       }
     }
+
     collisionComponents.clear();
   }
+
+  void _destroyAsteroid() {
+    isDestroyed.value = true;
+    hitBox.collisionType = CollisionType.inactive;
+    FlameAudio.play('explosion.mp3', volume: 0.1);
+    Future.delayed(Duration(milliseconds: 400)).then((_) {
+      position = _startPosition();
+      isDestroyed.value = false;
+      firedAtTimestamp = DateTime.now().microsecondsSinceEpoch;
+      hitBox.collisionType = CollisionType.active;
+    });
+  }
+
+  Vector2 _startPosition() => Vector2(35 + Random().nextInt(500).toDouble(), 0);
 }

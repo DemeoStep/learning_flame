@@ -1,20 +1,25 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:flame/components.dart' hide Plane;
+import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:flutter/services.dart';
 import 'package:learning_flame/actors/actor.dart';
 import 'package:learning_flame/actors/asteroid.dart';
 import 'package:learning_flame/actors/cannon.dart';
 import 'package:learning_flame/actors/plane.dart';
+import 'package:learning_flame/bloc/game_stats_cubit.dart';
+import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/fly_game.dart';
 import 'package:learning_flame/rive_component_loader_mixin.dart';
 
 class Level extends World
-    with HasGameReference<FlyGame>, KeyboardHandler
+    with
+        HasGameReference<FlyGame>,
+        KeyboardHandler,
+        FlameBlocReader<GameStatsCubit, GameStatsState>
     implements Actor {
   @override
   final String artBoardName = Consts.spaceArtBoardName;
@@ -28,7 +33,7 @@ class Level extends World
   late final RiveComponent space;
 
   @override
-  FutureOr<void> onLoad() async {
+  Future<void> onLoad() async {
     space = await loadRiveComponent();
 
     plane = Plane();
@@ -105,9 +110,13 @@ class Level extends World
     if (firedCannons.isNotEmpty) {
       if (DateTime.now().millisecondsSinceEpoch -
               firedCannons.last.firedAtTimestamp <
-          firedCannons.last.reloadTime) {
+          bloc.state.cannonReloadTime) {
         return;
       }
+    }
+
+    if (firedCannons.length >= bloc.state.fireAtOnce) {
+      return;
     }
 
     add(
@@ -125,19 +134,11 @@ class Level extends World
       (c) => c.firedAtTimestamp,
     );
 
-    if (firedAsteroids.isNotEmpty) {
-      if (DateTime.now().microsecondsSinceEpoch -
-              firedAsteroids.last.firedAtTimestamp <
-          firedAsteroids.last.reloadTime) {
-        return;
-      }
-    }
+    bloc.addAsteroid();
 
-    add(
-      Asteroid(
-        startPosition: Vector2(35 + Random().nextInt(500).toDouble(), 0),
-      ),
-    );
+    if (firedAsteroids.length < bloc.state.asteroidCount) {
+      add(Asteroid());
+    }
   }
 
   @override

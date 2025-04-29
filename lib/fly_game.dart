@@ -1,9 +1,11 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
+import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/levels/level.dart';
 import 'package:window_manager/window_manager.dart';
@@ -38,6 +40,10 @@ class FlyGame extends FlameGame
     windowManager.addListener(this);
 
     overlays.add('score');
+
+    await FlameAudio.bgm.initialize();
+    await FlameAudio.audioCache.loadAll(['gun_fire.wav', 'explosion.mp3']);
+
     super.onLoad();
   }
 
