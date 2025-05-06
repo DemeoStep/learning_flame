@@ -18,6 +18,13 @@ class FlyGame extends FlameGame
   late final Artboard cannonArtBoard;
   final GameStatsCubit cubit;
 
+  // Sound file names as constants to ensure consistency
+  static const String _gunFireSound = 'gun_fire.wav';
+  static const String _explosionSound = 'explosion.mp3';
+
+  // Default volume for sounds
+  static const double _defaultVolume = 0.1;
+
   FlyGame({required this.cubit});
 
   @override
@@ -40,19 +47,30 @@ class FlyGame extends FlameGame
       ),
     );
 
-    // Set up collision detection listener
-    collisionDetection.collisionsCompletedNotifier.addListener(
-      _resolveCollisions,
-    );
-
     windowManager.addListener(this);
 
     overlays.add('score');
 
-    await FlameAudio.bgm.initialize();
-    await FlameAudio.audioCache.loadAll(['gun_fire.wav', 'explosion.mp3']);
+    // Initialize audio
+    await _initializeAudio();
 
     super.onLoad();
+  }
+
+  /// Initializes the audio system and preloads sound files
+  Future<void> _initializeAudio() async {
+    await FlameAudio.bgm.initialize();
+    await FlameAudio.audioCache.loadAll([_gunFireSound, _explosionSound]);
+  }
+
+  /// Plays the gun fire sound
+  void playGunFireSound({double? volume}) {
+    FlameAudio.play(_gunFireSound, volume: volume ?? _defaultVolume);
+  }
+
+  /// Plays the explosion sound
+  void playExplosionSound({double? volume}) {
+    FlameAudio.play(_explosionSound, volume: volume ?? _defaultVolume);
   }
 
   Future<void> _worldInit() async {
@@ -110,32 +128,5 @@ class FlyGame extends FlameGame
     return artBoard;
   }
 
-  void _resolveCollisions() {
-    final activeCollisions = collisionDetection.collisions;
-
-    for (final collision in activeCollisions) {
-      Asteroid? asteroid;
-      PositionComponent? other;
-
-      if (collision.first is Asteroid) {
-        asteroid = collision.first as Asteroid;
-        other = collision.second;
-      } else if (collision.second is Asteroid) {
-        asteroid = collision.second as Asteroid;
-        other = collision.first;
-      }
-
-      if (asteroid == null || other == null) continue;
-
-      if (other is Cannon) {
-        asteroid.destroyAsteroid();
-        other.removeFromParent();
-        cubit.increaseScore();
-      } else if (other is GamePlane) {
-        asteroid.destroyAsteroid();
-        other.hitTrigger.fire();
-        cubit.decreaseLive();
-      }
-    }
-  }
+  // Remove the _resolveCollisions method as we'll handle collisions in each component
 }

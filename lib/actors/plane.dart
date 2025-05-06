@@ -86,6 +86,18 @@ class GamePlane extends PositionComponent
   void onNewState(state) {
     _speed = state.planeSpeed;
   }
+
+  @override
+  void onCollisionStart(
+    Set<Vector2> intersectionPoints,
+    PositionComponent other,
+  ) {
+    super.onCollisionStart(intersectionPoints, other);
+
+    // We'll handle the Asteroid collision in the Asteroid class
+    // This method is here for potential future use or if you want
+    // to handle additional collision logic for the GamePlane
+  }
 }
 
 enum FlyDirection { left, right, none }

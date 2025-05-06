@@ -6,6 +6,8 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/actors/actor.dart';
+import 'package:learning_flame/actors/cannon.dart';
+import 'package:learning_flame/actors/plane.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
@@ -76,10 +78,13 @@ class Asteroid extends PositionComponent
   // Made public so FlyGame can call it
   void destroyAsteroid() {
     if (isDestroyed.value) return; // Prevent duplicate destructions
-    
+
     isDestroyed.value = true;
     hitBox.collisionType = CollisionType.inactive;
-    FlameAudio.play('explosion.mp3', volume: 0.1);
+
+    // Use the game reference to play the sound
+    game.playExplosionSound();
+
     Future.delayed(Duration(milliseconds: 400)).then((_) {
       position = _startPosition();
       isDestroyed.value = false;
@@ -90,6 +95,24 @@ class Asteroid extends PositionComponent
 
   void spawnAsteroid() {
     isDestroyed.value = false;
+  }
+
+  @override
+  void onCollisionStart(
+    Set<Vector2> intersectionPoints,
+    PositionComponent other,
+  ) {
+    super.onCollisionStart(intersectionPoints, other);
+
+    if (other is Cannon) {
+      destroyAsteroid();
+      other.removeFromParent();
+      bloc.increaseScore();
+    } else if (other is GamePlane) {
+      destroyAsteroid();
+      other.hitTrigger.fire();
+      bloc.decreaseLive();
+    }
   }
 
   Vector2 _startPosition() => Vector2(35 + Random().nextInt(500).toDouble(), 0);

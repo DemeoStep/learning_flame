@@ -7,11 +7,13 @@ import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/fly_game.dart';
+import 'package:learning_flame/actors/asteroid.dart';
 
 class Cannon extends PositionComponent
     with
         HasGameReference<FlyGame>,
-        FlameBlocReader<GameStatsCubit, GameStatsState> {
+        FlameBlocReader<GameStatsCubit, GameStatsState>,
+        CollisionCallbacks {
   late final RiveComponent cannon;
 
   late final int firedAtTimestamp;
@@ -43,7 +45,8 @@ class Cannon extends PositionComponent
     add(cannon);
     add(hitBox);
 
-    FlameAudio.play('gun_fire.wav', volume: 0.1);
+    // Use the game reference to play the sound
+    game.playGunFireSound();
 
     super.onLoad();
   }
@@ -57,5 +60,17 @@ class Cannon extends PositionComponent
       position.add(Vector2(0, -speed * dt));
     }
     super.update(dt);
+  }
+
+  @override
+  void onCollisionStart(
+    Set<Vector2> intersectionPoints,
+    PositionComponent other,
+  ) {
+    super.onCollisionStart(intersectionPoints, other);
+
+    // We'll handle the Asteroid collision in the Asteroid class
+    // This method is here for potential future use or if you want
+    // to handle additional collision logic for the Cannon
   }
 }
