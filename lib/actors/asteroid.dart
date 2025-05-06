@@ -6,8 +6,6 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/actors/actor.dart';
-import 'package:learning_flame/actors/cannon.dart';
-import 'package:learning_flame/actors/plane.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
@@ -35,8 +33,6 @@ class Asteroid extends PositionComponent
 
   late final RectangleHitbox hitBox;
 
-  final List<PositionComponent> collisionComponents = [];
-
   late SMIBool isDestroyed;
 
   @override
@@ -60,13 +56,6 @@ class Asteroid extends PositionComponent
     add(asteroid);
     add(hitBox);
 
-    (game as HasCollisionDetection)
-        .collisionDetection
-        .collisionsCompletedNotifier
-        .addListener(() {
-          _resolveCollisions();
-        });
-
     super.onLoad();
   }
 
@@ -84,33 +73,10 @@ class Asteroid extends PositionComponent
     super.update(dt);
   }
 
-  @override
-  void onCollisionStart(
-    Set<Vector2> intersectionPoints,
-    PositionComponent other,
-  ) {
-    super.onCollisionStart(intersectionPoints, other);
-    if (other is Cannon || other is Plane) {
-      _destroyAsteroid();
-      collisionComponents.add(other);
-    }
-  }
-
-  void _resolveCollisions() {
-    for (final component in collisionComponents) {
-      if (component is Cannon) {
-        component.removeFromParent();
-        bloc.increaseScore();
-      } else if (component is Plane) {
-        component.hitTrigger.fire();
-        bloc.decreaseLive();
-      }
-    }
-
-    collisionComponents.clear();
-  }
-
-  void _destroyAsteroid() {
+  // Made public so FlyGame can call it
+  void destroyAsteroid() {
+    if (isDestroyed.value) return; // Prevent duplicate destructions
+    
     isDestroyed.value = true;
     hitBox.collisionType = CollisionType.inactive;
     FlameAudio.play('explosion.mp3', volume: 0.1);

@@ -28,7 +28,7 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
 
   int level = 0;
 
-  void _onInit(Artboard artboard) {
+  void _onInit(Artboard artboard, GameStatsCubit cubit) {
     final controller = StateMachineController.fromArtboard(
       artboard,
       'MessageSM',
@@ -40,6 +40,8 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
 
     _messageShowTrigger = controller.getTriggerInput('ShowMessage')!;
     _messageHideTrigger = controller.getTriggerInput('HideMessage')!;
+
+    cubit.gameStart();
   }
 
   @override
@@ -147,7 +149,9 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
                     artboard: 'Message',
                     // fit: BoxFit.fill,
                     stateMachines: ['MessageSM'],
-                    onInit: _onInit,
+                    onInit:
+                        (artboard) =>
+                            _onInit(artboard, context.read<GameStatsCubit>()),
                   ),
                 ),
               ],

@@ -6,6 +6,7 @@ part 'game_stats_state.freezed.dart';
 abstract class GameStatsState with _$GameStatsState {
   factory GameStatsState({
     @Default(false) bool isGameOver,
+    @Default(false) bool isGameStarted,
     @Default(0) int gameStartTimestamp,
     @Default(0) int score,
     @Default(3) int lives,
@@ -13,13 +14,14 @@ abstract class GameStatsState with _$GameStatsState {
     @Default(3) int fireAtOnce,
     @Default(100) int cannonSpeed,
     @Default(200) int cannonReloadTime,
-    @Default(1) int asteroidCount,
+    @Default(0) int asteroidCount,
     @Default(100) int asteroidSpeed,
   }) = _GameStatsState;
 
   factory GameStatsState.empty() {
     return GameStatsState(
       isGameOver: false,
+      isGameStarted: false,
       gameStartTimestamp: DateTime.now().millisecondsSinceEpoch,
       score: 0,
       lives: 3,
@@ -27,7 +29,7 @@ abstract class GameStatsState with _$GameStatsState {
       fireAtOnce: 3,
       cannonSpeed: 100,
       cannonReloadTime: 200,
-      asteroidCount: 1,
+      asteroidCount: 0,
       asteroidSpeed: 100,
     );
   }

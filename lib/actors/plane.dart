@@ -11,7 +11,7 @@ import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/fly_game.dart';
 import 'package:learning_flame/rive_component_loader_mixin.dart';
 
-class Plane extends PositionComponent
+class GamePlane extends PositionComponent
     with
         HasGameReference<FlyGame>,
         CollisionCallbacks,

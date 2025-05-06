@@ -4,6 +4,12 @@ import 'package:learning_flame/bloc/game_stats_state.dart';
 class GameStatsCubit extends Cubit<GameStatsState> {
   GameStatsCubit() : super(GameStatsState.empty());
 
+  void gameStart() {
+    Future.delayed(const Duration(seconds: 2), () {
+      emit(state.copyWith(isGameStarted: true));
+    });
+  }
+
   void increaseScore() {
     if (state.isGameOver) {
       return;
@@ -74,7 +80,8 @@ class GameStatsCubit extends Cubit<GameStatsState> {
   }
 
   int _calculateCannonReloadTime(int score) {
-    return 200 - (score.clamp(0, 400) ~/ 10) * 10;
+    final result = 300 - (score.clamp(0, 400) ~/ 10) * 5;
+    return result < 100 ? 100 : result;
   }
 
   int _calculateAsteroidSpeed() {

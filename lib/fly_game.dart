@@ -4,6 +4,9 @@ import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
+import 'package:learning_flame/actors/asteroid.dart';
+import 'package:learning_flame/actors/cannon.dart';
+import 'package:learning_flame/actors/plane.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
@@ -35,6 +38,11 @@ class FlyGame extends FlameGame
         create: () => cubit,
         children: [world],
       ),
+    );
+
+    // Set up collision detection listener
+    collisionDetection.collisionsCompletedNotifier.addListener(
+      _resolveCollisions,
     );
 
     windowManager.addListener(this);
@@ -100,5 +108,34 @@ class FlyGame extends FlameGame
     artBoard.addController(controller!);
 
     return artBoard;
+  }
+
+  void _resolveCollisions() {
+    final activeCollisions = collisionDetection.collisions;
+
+    for (final collision in activeCollisions) {
+      Asteroid? asteroid;
+      PositionComponent? other;
+
+      if (collision.first is Asteroid) {
+        asteroid = collision.first as Asteroid;
+        other = collision.second;
+      } else if (collision.second is Asteroid) {
+        asteroid = collision.second as Asteroid;
+        other = collision.first;
+      }
+
+      if (asteroid == null || other == null) continue;
+
+      if (other is Cannon) {
+        asteroid.destroyAsteroid();
+        other.removeFromParent();
+        cubit.increaseScore();
+      } else if (other is GamePlane) {
+        asteroid.destroyAsteroid();
+        other.hitTrigger.fire();
+        cubit.decreaseLive();
+      }
+    }
   }
 }

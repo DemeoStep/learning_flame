@@ -28,7 +28,7 @@ class Level extends World
   @override
   final Vector2 actorSize = Consts.spaceSize;
 
-  late final Plane plane;
+  late final GamePlane plane;
 
   late final RiveComponent space;
 
@@ -36,7 +36,7 @@ class Level extends World
   Future<void> onLoad() async {
     space = await loadRiveComponent();
 
-    plane = Plane();
+    plane = GamePlane();
 
     add(space);
     add(plane);
@@ -131,6 +131,10 @@ class Level extends World
   }
 
   void _spawnAsteroid() {
+    if (!bloc.state.isGameStarted) {
+      return;
+    }
+
     final firedAsteroids = children.whereType<Asteroid>().sortedBy(
       (c) => c.firedAtTimestamp,
     );
@@ -149,7 +153,7 @@ class Level extends World
       removeAll(asteroids);
     }
 
-    final plane = children.whereType<Plane>();
+    final plane = children.whereType<GamePlane>();
 
     if (plane.isNotEmpty) {
       removeAll(plane);
