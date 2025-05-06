@@ -37,7 +37,7 @@ class Asteroid extends PositionComponent
 
   final List<PositionComponent> collisionComponents = [];
 
-  late final SMIBool isDestroyed;
+  late SMIBool isDestroyed;
 
   @override
   Future<void> onLoad() async {
@@ -120,6 +120,10 @@ class Asteroid extends PositionComponent
       firedAtTimestamp = DateTime.now().microsecondsSinceEpoch;
       hitBox.collisionType = CollisionType.active;
     });
+  }
+
+  void spawnAsteroid() {
+    isDestroyed.value = false;
   }
 
   Vector2 _startPosition() => Vector2(35 + Random().nextInt(500).toDouble(), 0);

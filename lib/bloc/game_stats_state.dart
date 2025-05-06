@@ -5,6 +5,7 @@ part 'game_stats_state.freezed.dart';
 @Freezed(toJson: false, fromJson: false)
 abstract class GameStatsState with _$GameStatsState {
   factory GameStatsState({
+    @Default(false) bool isGameOver,
     @Default(0) int gameStartTimestamp,
     @Default(0) int score,
     @Default(3) int lives,
@@ -18,6 +19,7 @@ abstract class GameStatsState with _$GameStatsState {
 
   factory GameStatsState.empty() {
     return GameStatsState(
+      isGameOver: false,
       gameStartTimestamp: DateTime.now().millisecondsSinceEpoch,
       score: 0,
       lives: 3,

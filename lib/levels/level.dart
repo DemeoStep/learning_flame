@@ -95,9 +95,13 @@ class Level extends World
 
   @override
   void update(double dt) {
-    _spawnAsteroid();
-    if (plane.firing) {
-      _spawnCannon();
+    if (!bloc.state.isGameOver) {
+      _spawnAsteroid();
+      if (plane.firing) {
+        _spawnCannon();
+      }
+    } else {
+      _removeResources();
     }
     super.update(dt);
   }
@@ -109,14 +113,11 @@ class Level extends World
 
     if (firedCannons.isNotEmpty) {
       if (DateTime.now().millisecondsSinceEpoch -
-              firedCannons.last.firedAtTimestamp <
-          bloc.state.cannonReloadTime) {
+                  firedCannons.last.firedAtTimestamp <
+              bloc.state.cannonReloadTime ||
+          firedCannons.length >= bloc.state.fireAtOnce) {
         return;
       }
-    }
-
-    if (firedCannons.length >= bloc.state.fireAtOnce) {
-      return;
     }
 
     add(
@@ -138,6 +139,20 @@ class Level extends World
 
     if (firedAsteroids.length < bloc.state.asteroidCount) {
       add(Asteroid());
+    }
+  }
+
+  void _removeResources() {
+    final asteroids = children.whereType<Asteroid>();
+
+    if (asteroids.isNotEmpty) {
+      removeAll(asteroids);
+    }
+
+    final plane = children.whereType<Plane>();
+
+    if (plane.isNotEmpty) {
+      removeAll(plane);
     }
   }
 

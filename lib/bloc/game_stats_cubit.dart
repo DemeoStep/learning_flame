@@ -5,6 +5,9 @@ class GameStatsCubit extends Cubit<GameStatsState> {
   GameStatsCubit() : super(GameStatsState.empty());
 
   void increaseScore() {
+    if (state.isGameOver) {
+      return;
+    }
     final score = state.score + 1;
     emit(
       state.copyWith(
@@ -19,6 +22,9 @@ class GameStatsCubit extends Cubit<GameStatsState> {
   }
 
   void decreaseScore() {
+    if (state.isGameOver) {
+      return;
+    }
     final score = state.score >= 2 ? state.score - 2 : 0;
     emit(
       state.copyWith(
@@ -33,24 +39,28 @@ class GameStatsCubit extends Cubit<GameStatsState> {
   }
 
   void decreaseLive() {
+    if (state.isGameOver) {
+      return;
+    }
     emit(
       GameStatsState.empty().copyWith(
         lives: state.lives - 1,
         asteroidSpeed: state.asteroidSpeed,
+        isGameOver: state.lives <= 1,
       ),
     );
   }
 
   void addAsteroid() {
+    if (state.isGameOver) {
+      return;
+    }
+
     final now = DateTime.now().millisecondsSinceEpoch;
 
     if (now - state.gameStartTimestamp < 100000 * state.asteroidCount) {
       return;
     }
-
-    print(
-      'now: $now, gameStartTimestamp: ${state.gameStartTimestamp}, asteroidCount: ${state.asteroidCount}',
-    );
 
     emit(state.copyWith(asteroidCount: state.asteroidCount + 1));
   }
