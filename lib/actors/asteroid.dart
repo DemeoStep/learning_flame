@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart' hide Plane;
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/actors/actor.dart';

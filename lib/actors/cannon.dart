@@ -1,13 +1,11 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/fly_game.dart';
-import 'package:learning_flame/actors/asteroid.dart';
 
 class Cannon extends PositionComponent
     with
