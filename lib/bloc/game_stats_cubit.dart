@@ -1,10 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
+import 'package:learning_flame/game/actors/asteroid.dart';
+import 'package:learning_flame/game/actors/cannon.dart';
 
 class GameStatsCubit extends Cubit<GameStatsState> {
   GameStatsCubit() : super(GameStatsState.empty());
 
   void gameStart() {
+    for (var i = 0; i < state.fireAtOnce; i++) {
+      state.cannonsPool.add(CannonActor());
+    }
+
     Future.delayed(const Duration(seconds: 2), () {
       emit(state.copyWith(isGameStarted: true));
     });
@@ -50,9 +56,12 @@ class GameStatsCubit extends Cubit<GameStatsState> {
     }
     emit(
       GameStatsState.empty().copyWith(
+        isGameStarted: true,
+        gameStartTime: state.gameStartTime,
         lives: state.lives - 1,
         asteroidSpeed: state.asteroidSpeed,
         isGameOver: state.lives <= 1,
+        asteroidsPool: state.asteroidsPool,
       ),
     );
   }
@@ -62,10 +71,15 @@ class GameStatsCubit extends Cubit<GameStatsState> {
       return;
     }
 
-    final now = DateTime.now().millisecondsSinceEpoch;
+    final now = DateTime.now();
 
-    if (now - state.gameStartTimestamp < 100000 * state.asteroidCount) {
+    if (now.difference(state.gameStartTime) <
+        Duration(minutes: state.asteroidCount)) {
       return;
+    }
+
+    if (state.asteroidsPool.totalCount < state.asteroidCount + 1) {
+      state.asteroidsPool.add(AsteroidActor());
     }
 
     emit(state.copyWith(asteroidCount: state.asteroidCount + 1));
@@ -86,13 +100,18 @@ class GameStatsCubit extends Cubit<GameStatsState> {
 
   int _calculateAsteroidSpeed() {
     final gamingTimeMinutes =
-        DateTime.now().millisecondsSinceEpoch -
-        state.gameStartTimestamp / 1000 / 60;
+        DateTime.now().difference(state.gameStartTime).inMinutes;
 
     return 100 + (gamingTimeMinutes.clamp(0, 6) ~/ 10) * 10;
   }
 
   int _calculateFireAtOnce(int score) {
-    return 3 + (score.clamp(0, 200) ~/ 20);
+    final res = 3 + (score.clamp(0, 200) ~/ 20);
+
+    if (res < state.cannonsPool.totalCount) {
+      state.cannonsPool.add(CannonActor());
+    }
+
+    return res;
   }
 }

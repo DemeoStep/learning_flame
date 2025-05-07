@@ -26,18 +26,17 @@ class CannonActor extends PositionComponent
 
   late final int firedAtTimestamp;
 
-  late final Vector2 startPosition;
-
   late final RectangleHitbox hitBox;
 
-  CannonActor({required this.startPosition});
+  CannonActor();
 
   @override
   Future<void> onLoad() async {
-    position = startPosition;
+    position = _startingPosition;
+
     firedAtTimestamp = DateTime.now().millisecondsSinceEpoch;
 
-    final cannon = await riveComponentService.loadRiveComponent(this);
+    cannon = await riveComponentService.loadRiveComponent(this);
 
     hitBox = RectangleHitbox(size: cannon.size);
 
@@ -53,10 +52,27 @@ class CannonActor extends PositionComponent
   update(double dt) {
     final speed = bloc.state.cannonSpeed;
     if (position.y < 0) {
-      removeFromParent();
+      destroy();
     } else {
       position.add(Vector2(0, -speed * dt));
     }
     super.update(dt);
   }
+
+  ///TODO: Implement this
+  // void spawn() {
+  //   position = _startingPosition;
+  //   add(cannon);
+  //   add(hitBox);
+  // }
+
+  void destroy() {
+    bloc.state.cannonsPool.toPool(this);
+    position = _startingPosition;
+  }
+
+  Vector2 get _startingPosition => Vector2(
+    game.plane.position.x - 2 + Consts.planeSize.x / 2,
+    game.plane.position.y,
+  );
 }

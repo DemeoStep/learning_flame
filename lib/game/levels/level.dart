@@ -1,17 +1,15 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:flame/components.dart' hide Plane;
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/game/actors/asteroid.dart';
-import 'package:learning_flame/game/actors/cannon.dart';
-import 'package:learning_flame/game/actors/plane.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
+import 'package:learning_flame/game/actors/plane.dart';
 import 'package:learning_flame/game/fly_game.dart';
 
 class Level extends World
@@ -27,59 +25,55 @@ class Level extends World
   @override
   final Vector2 actorSize = Consts.spaceSize;
 
-  late final PlaneActor plane;
-
   @override
   Future<void> onLoad() async {
     final space = await riveComponentService.loadRiveComponent(this);
 
-    plane = PlaneActor();
-
     add(space);
-    add(plane);
+    add(game.plane);
 
     add(
       KeyboardListenerComponent(
         keyUp: {
           LogicalKeyboardKey.space: (keysPressed) {
-            plane.firing = false;
+            game.plane.firing = false;
             return false;
           },
           LogicalKeyboardKey.arrowLeft: (keysPressed) {
             if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
-              plane.flyDirection = FlyDirection.right;
+              game.plane.flyDirection = FlyDirection.right;
             } else {
-              plane.flyDirection = FlyDirection.none;
+              game.plane.flyDirection = FlyDirection.none;
             }
             return false;
           },
           LogicalKeyboardKey.arrowRight: (keysPressed) {
             if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
-              plane.flyDirection = FlyDirection.left;
+              game.plane.flyDirection = FlyDirection.left;
             } else {
-              plane.flyDirection = FlyDirection.none;
+              game.plane.flyDirection = FlyDirection.none;
             }
             return false;
           },
         },
         keyDown: {
           LogicalKeyboardKey.space: (keysPressed) {
-            plane.firing = true;
+            game.plane.firing = true;
             return false;
           },
           LogicalKeyboardKey.arrowLeft: (keysPressed) {
             if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
-              plane.flyDirection = FlyDirection.right;
+              game.plane.flyDirection = FlyDirection.right;
             } else {
-              plane.flyDirection = FlyDirection.left;
+              game.plane.flyDirection = FlyDirection.left;
             }
             return false;
           },
           LogicalKeyboardKey.arrowRight: (keysPressed) {
             if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
-              plane.flyDirection = FlyDirection.left;
+              game.plane.flyDirection = FlyDirection.left;
             } else {
-              plane.flyDirection = FlyDirection.right;
+              game.plane.flyDirection = FlyDirection.right;
             }
             return false;
           },
@@ -94,7 +88,7 @@ class Level extends World
   void update(double dt) {
     if (!bloc.state.isGameOver) {
       _spawnAsteroid();
-      if (plane.firing) {
+      if (game.plane.firing) {
         _spawnCannon();
       }
     } else {
@@ -104,27 +98,24 @@ class Level extends World
   }
 
   void _spawnCannon() {
-    final firedCannons = children.whereType<CannonActor>().sortedBy(
-      (c) => c.firedAtTimestamp,
-    );
+    final cannonsPool = bloc.state.cannonsPool;
 
-    if (firedCannons.isNotEmpty) {
-      if (DateTime.now().millisecondsSinceEpoch -
-                  firedCannons.last.firedAtTimestamp <
-              bloc.state.cannonReloadTime ||
-          firedCannons.length >= bloc.state.fireAtOnce) {
-        return;
+    if (cannonsPool.activeCount < bloc.state.fireAtOnce) {
+      final cannon = cannonsPool.fromPool();
+
+      if (cannon != null) {
+        cannonsPool.printPool();
+        add(cannon);
       }
-    }
 
-    add(
-      CannonActor(
-        startPosition: Vector2(
-          plane.position.x - 2 + Consts.planeSize.x / 2,
-          plane.position.y,
-        ),
-      ),
-    );
+      // if ((cannonsPool.lastActive != null &&
+      //         DateTime.now().millisecondsSinceEpoch -
+      //                 cannonsPool.lastActive!.firedAtTimestamp <
+      //             bloc.state.cannonReloadTime) ||
+      //     cannonsPool.activeCount >= bloc.state.fireAtOnce) {
+      //   return;
+      // }
+    }
   }
 
   void _spawnAsteroid() {
@@ -132,14 +123,18 @@ class Level extends World
       return;
     }
 
-    final firedAsteroids = children.whereType<AsteroidActor>().sortedBy(
-      (c) => c.firedAtTimestamp,
-    );
+    final asteroidsPool = bloc.state.asteroidsPool;
+
+    final firedAsteroids = asteroidsPool.activeCount;
 
     bloc.addAsteroid();
 
-    if (firedAsteroids.length < bloc.state.asteroidCount) {
-      add(AsteroidActor());
+    if (firedAsteroids < bloc.state.asteroidCount) {
+      final asteroid = asteroidsPool.fromPool();
+
+      if (asteroid != null) {
+        add(asteroid);
+      }
     }
   }
 

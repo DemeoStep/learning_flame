@@ -74,26 +74,23 @@ class AsteroidActor extends PositionComponent
     super.update(dt);
   }
 
-  // Made public so FlyGame can call it
   void destroyAsteroid() {
-    if (isDestroyed.value) return; // Prevent duplicate destructions
+    if (isDestroyed.value) return;
+
+    final asteroidsPool = bloc.state.asteroidsPool;
 
     isDestroyed.value = true;
     hitBox.collisionType = CollisionType.inactive;
 
-    // Use the game reference to play the sound
     audioService.play(sound: Consts.explosion);
 
     Future.delayed(Duration(milliseconds: 400)).then((_) {
+      asteroidsPool.toPool(this);
       position = _startPosition();
       isDestroyed.value = false;
       firedAtTimestamp = DateTime.now().microsecondsSinceEpoch;
       hitBox.collisionType = CollisionType.active;
     });
-  }
-
-  void spawnAsteroid() {
-    isDestroyed.value = false;
   }
 
   @override
@@ -105,7 +102,7 @@ class AsteroidActor extends PositionComponent
 
     if (other is CannonActor) {
       destroyAsteroid();
-      other.removeFromParent();
+      other.destroy();
       bloc.increaseScore();
     } else if (other is PlaneActor) {
       destroyAsteroid();

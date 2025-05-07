@@ -9,15 +9,20 @@ import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/game/levels/level.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'package:learning_flame/game/actors/plane.dart';
+
 class FlyGame extends FlameGame
     with HasKeyboardHandlerComponents, WindowListener, HasCollisionDetection {
   final GameStatsCubit cubit;
+
+  late final PlaneActor plane;
 
   FlyGame({required this.cubit});
 
   @override
   Future<void> onLoad() async {
     world = Level();
+    plane = PlaneActor();
 
     camera = CameraComponent.withFixedResolution(
       width: Consts.windowSize.width,
