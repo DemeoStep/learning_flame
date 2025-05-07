@@ -6,13 +6,22 @@ import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/core/di.dart';
+import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/game/fly_game.dart';
 
 class Cannon extends PositionComponent
     with
         HasGameReference<FlyGame>,
         FlameBlocReader<GameStatsCubit, GameStatsState>,
-        CollisionCallbacks {
+        CollisionCallbacks
+    implements Actor {
+  @override
+  final String artBoardName = Consts.cannonArtBoardName;
+  @override
+  final String stateMachineName = Consts.cannonStateMachineName;
+  @override
+  final Vector2 actorSize = Consts.cannonSize;
+
   late final RiveComponent cannon;
 
   late final int firedAtTimestamp;
@@ -28,16 +37,7 @@ class Cannon extends PositionComponent
     position = startPosition;
     firedAtTimestamp = DateTime.now().millisecondsSinceEpoch;
 
-    final artBoard = artboardService.getArtboard(Consts.cannonArtBoardName);
-
-    final controller = StateMachineController.fromArtboard(
-      artBoard,
-      Consts.cannonStateMachineName,
-    );
-
-    artBoard.addController(controller!);
-
-    cannon = RiveComponent(artboard: artBoard);
+    final cannon = await riveComponentService.loadRiveComponent(this);
 
     hitBox = RectangleHitbox(size: cannon.size);
 

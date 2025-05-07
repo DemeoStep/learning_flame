@@ -12,7 +12,6 @@ import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/fly_game.dart';
-import 'package:learning_flame/game/rive_component_loader_mixin.dart';
 
 class Asteroid extends PositionComponent
     with
@@ -42,7 +41,7 @@ class Asteroid extends PositionComponent
     position = _startPosition();
     firedAtTimestamp = DateTime.now().microsecondsSinceEpoch;
 
-    final asteroid = await loadRiveComponent();
+    final asteroid = await riveComponentService.loadRiveComponent(this);
 
     final controller = StateMachineController.fromArtboard(
       asteroid.artboard,
