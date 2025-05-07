@@ -7,14 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
-import 'package:learning_flame/fly_game.dart';
-import 'package:learning_flame/score_overlay.dart';
+import 'package:learning_flame/core/di.dart';
+import 'package:learning_flame/game/fly_game.dart';
+import 'package:learning_flame/presentation/score_overlay.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'consts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  initDi();
 
   if (!kIsWeb) {
     if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {

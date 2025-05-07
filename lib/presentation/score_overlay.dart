@@ -7,9 +7,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
-import 'package:learning_flame/fly_game.dart';
+import 'package:learning_flame/game/fly_game.dart';
 
-import 'consts.dart';
+import '../consts.dart';
 
 class ScoreOverlay extends StatefulWidget {
   final FlyGame game;

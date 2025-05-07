@@ -1,7 +1,6 @@
 import 'package:flame_rive/flame_rive.dart';
-import 'package:learning_flame/actors/actor.dart';
-
-import 'consts.dart';
+import 'package:learning_flame/game/actors/actor.dart';
+import 'package:learning_flame/consts.dart';
 
 extension RiveComponentLoader on Actor {
   Future<RiveComponent> loadRiveComponent() async {

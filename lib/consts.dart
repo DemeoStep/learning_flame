@@ -19,4 +19,9 @@ class Consts {
   static Vector2 planeSize = Vector2(60, 100);
   static Vector2 cannonSize = Vector2(5, 10);
   static Vector2 asteroidSize = Vector2(30, 30);
+
+  //Sounds
+  static const String gunFire = 'gun_fire.wav';
+  static const String explosion = 'explosion.mp3';
+  static const List<String> sounds = [gunFire, explosion];
 }

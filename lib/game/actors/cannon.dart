@@ -5,7 +5,8 @@ import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
-import 'package:learning_flame/fly_game.dart';
+import 'package:learning_flame/core/di.dart';
+import 'package:learning_flame/game/fly_game.dart';
 
 class Cannon extends PositionComponent
     with
@@ -27,10 +28,10 @@ class Cannon extends PositionComponent
     position = startPosition;
     firedAtTimestamp = DateTime.now().millisecondsSinceEpoch;
 
-    final artBoard = game.cannonArtBoard;
+    final artBoard = artboardService.getArtboard(Consts.cannonArtBoardName);
 
     final controller = StateMachineController.fromArtboard(
-      game.cannonArtBoard,
+      artBoard,
       Consts.cannonStateMachineName,
     );
 
@@ -44,7 +45,7 @@ class Cannon extends PositionComponent
     add(hitBox);
 
     // Use the game reference to play the sound
-    game.playGunFireSound();
+    audioService.play(sound: Consts.gunFire);
 
     super.onLoad();
   }

@@ -4,14 +4,15 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart' hide Plane;
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
-import 'package:learning_flame/actors/actor.dart';
-import 'package:learning_flame/actors/cannon.dart';
-import 'package:learning_flame/actors/plane.dart';
+import 'package:learning_flame/game/actors/actor.dart';
+import 'package:learning_flame/game/actors/cannon.dart';
+import 'package:learning_flame/game/actors/plane.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
-import 'package:learning_flame/fly_game.dart';
-import 'package:learning_flame/rive_component_loader_mixin.dart';
+import 'package:learning_flame/core/di.dart';
+import 'package:learning_flame/game/fly_game.dart';
+import 'package:learning_flame/game/rive_component_loader_mixin.dart';
 
 class Asteroid extends PositionComponent
     with
@@ -82,7 +83,7 @@ class Asteroid extends PositionComponent
     hitBox.collisionType = CollisionType.inactive;
 
     // Use the game reference to play the sound
-    game.playExplosionSound();
+    audioService.play(sound: Consts.explosion);
 
     Future.delayed(Duration(milliseconds: 400)).then((_) {
       position = _startPosition();
