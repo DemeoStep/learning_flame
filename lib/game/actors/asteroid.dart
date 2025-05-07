@@ -13,7 +13,7 @@ import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/fly_game.dart';
 
-class Asteroid extends PositionComponent
+class AsteroidActor extends PositionComponent
     with
         HasGameReference<FlyGame>,
         CollisionCallbacks,
@@ -103,11 +103,11 @@ class Asteroid extends PositionComponent
   ) {
     super.onCollisionStart(intersectionPoints, other);
 
-    if (other is Cannon) {
+    if (other is CannonActor) {
       destroyAsteroid();
       other.removeFromParent();
       bloc.increaseScore();
-    } else if (other is GamePlane) {
+    } else if (other is PlaneActor) {
       destroyAsteroid();
       other.hitTrigger.fire();
       bloc.decreaseLive();

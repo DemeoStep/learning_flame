@@ -3,7 +3,9 @@ import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/consts.dart';
 
 class RiveComponentService {
-  late final RiveFile file;
+  late final RiveFile _file;
+
+  RiveFile get file => _file;
 
   RiveComponentService() {
     _init();
@@ -11,7 +13,7 @@ class RiveComponentService {
 
   void _init() {
     RiveFile.asset(Consts.mainRiveFilePath).then((riveFile) {
-      file = riveFile;
+      _file = riveFile;
     });
   }
 

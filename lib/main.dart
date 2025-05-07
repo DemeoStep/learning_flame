@@ -48,6 +48,7 @@ void main() async {
     MaterialApp(
       home: BlocProvider(
         create: (context) => gameStatsCubit,
+        lazy: false,
         child: Scaffold(
           body: GameWidget(
             game: FlyGame(cubit: gameStatsCubit),

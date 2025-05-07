@@ -1,3 +1,4 @@
+import 'package:learning_flame/core/di.dart';
 import 'package:rive/rive.dart';
 
 import 'package:flame_rive/flame_rive.dart';
@@ -8,8 +9,6 @@ import 'package:gap/gap.dart';
 import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/game/fly_game.dart';
-
-import '../consts.dart';
 
 class ScoreOverlay extends StatefulWidget {
   final FlyGame game;
@@ -144,8 +143,8 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
                   ],
                 ),
                 Positioned.fill(
-                  child: RiveAnimation.asset(
-                    Consts.mainRiveFilePath,
+                  child: RiveAnimation.direct(
+                    riveComponentService.file,
                     artboard: 'Message',
                     // fit: BoxFit.fill,
                     stateMachines: ['MessageSM'],

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flame/components.dart' hide Plane;
 import 'package:flame_bloc/flame_bloc.dart';
-import 'package:flame_rive/flame_rive.dart';
 import 'package:flutter/services.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/actor.dart';
@@ -28,15 +27,13 @@ class Level extends World
   @override
   final Vector2 actorSize = Consts.spaceSize;
 
-  late final GamePlane plane;
-
-  late final RiveComponent space;
+  late final PlaneActor plane;
 
   @override
   Future<void> onLoad() async {
-    space = await riveComponentService.loadRiveComponent(this);
+    final space = await riveComponentService.loadRiveComponent(this);
 
-    plane = GamePlane();
+    plane = PlaneActor();
 
     add(space);
     add(plane);
@@ -107,7 +104,7 @@ class Level extends World
   }
 
   void _spawnCannon() {
-    final firedCannons = children.whereType<Cannon>().sortedBy(
+    final firedCannons = children.whereType<CannonActor>().sortedBy(
       (c) => c.firedAtTimestamp,
     );
 
@@ -121,7 +118,7 @@ class Level extends World
     }
 
     add(
-      Cannon(
+      CannonActor(
         startPosition: Vector2(
           plane.position.x - 2 + Consts.planeSize.x / 2,
           plane.position.y,
@@ -135,25 +132,25 @@ class Level extends World
       return;
     }
 
-    final firedAsteroids = children.whereType<Asteroid>().sortedBy(
+    final firedAsteroids = children.whereType<AsteroidActor>().sortedBy(
       (c) => c.firedAtTimestamp,
     );
 
     bloc.addAsteroid();
 
     if (firedAsteroids.length < bloc.state.asteroidCount) {
-      add(Asteroid());
+      add(AsteroidActor());
     }
   }
 
   void _removeResources() {
-    final asteroids = children.whereType<Asteroid>();
+    final asteroids = children.whereType<AsteroidActor>();
 
     if (asteroids.isNotEmpty) {
       removeAll(asteroids);
     }
 
-    final plane = children.whereType<GamePlane>();
+    final plane = children.whereType<PlaneActor>();
 
     if (plane.isNotEmpty) {
       removeAll(plane);

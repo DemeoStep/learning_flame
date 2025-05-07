@@ -11,7 +11,7 @@ import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/game/fly_game.dart';
 
-class GamePlane extends PositionComponent
+class PlaneActor extends PositionComponent
     with
         HasGameReference<FlyGame>,
         CollisionCallbacks,
