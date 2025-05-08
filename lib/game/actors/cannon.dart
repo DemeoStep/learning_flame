@@ -22,34 +22,35 @@ class CannonActor extends PositionComponent
   @override
   final Vector2 actorSize = Consts.cannonSize;
 
-  late final RiveComponent cannon;
+  late RiveComponent cannon;
 
-  late final int firedAtTimestamp;
+  late int firedAtTimestamp;
 
-  late final RectangleHitbox hitBox;
+  late RectangleHitbox hitBox;
+
+  bool _isInitialized = false;
+
+  bool visible = false;
 
   CannonActor();
 
   @override
   Future<void> onLoad() async {
-    position = _startingPosition;
-
-    firedAtTimestamp = DateTime.now().millisecondsSinceEpoch;
-
     cannon = await riveComponentService.loadRiveComponent(this);
 
     hitBox = RectangleHitbox(size: cannon.size);
 
-    add(cannon);
-    add(hitBox);
-
-    audioService.play(sound: Consts.gunFire);
+    _isInitialized = true;
 
     super.onLoad();
   }
 
   @override
   update(double dt) {
+    if (!visible) {
+      return;
+    }
+
     final speed = bloc.state.cannonSpeed;
     if (position.y < 0) {
       destroy();
@@ -59,20 +60,41 @@ class CannonActor extends PositionComponent
     super.update(dt);
   }
 
-  ///TODO: Implement this
-  // void spawn() {
-  //   position = _startingPosition;
-  //   add(cannon);
-  //   add(hitBox);
-  // }
+  void fire() async {
+    if (!_isInitialized) {
+      await onLoad();
+    }
+
+    visible = true;
+    position = _startingPosition;
+    size = cannon.size;
+
+    firedAtTimestamp = DateTime.now().millisecondsSinceEpoch;
+
+    if (!contains(cannon)) {
+      add(cannon);
+    }
+
+    if (!contains(hitBox)) {
+      add(hitBox);
+    }
+
+    audioService.play(sound: Consts.gunFire);
+  }
 
   void destroy() {
+    visible = false;
+    position = _stackingPosition;
     bloc.state.cannonsPool.toPool(this);
-    position = _startingPosition;
   }
 
   Vector2 get _startingPosition => Vector2(
     game.plane.position.x - 2 + Consts.planeSize.x / 2,
     game.plane.position.y,
+  );
+
+  Vector2 get _stackingPosition => Vector2(
+    game.plane.position.x - 2 + Consts.planeSize.x / 2,
+    game.plane.position.y + 150,
   );
 }

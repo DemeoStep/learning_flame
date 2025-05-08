@@ -106,10 +106,14 @@ class GameStatsCubit extends Cubit<GameStatsState> {
   }
 
   int _calculateFireAtOnce(int score) {
-    final res = 3 + (score.clamp(0, 200) ~/ 20);
+    final res = 3 + (score.clamp(0, 200) ~/ 5);
 
-    if (res < state.cannonsPool.totalCount) {
-      state.cannonsPool.add(CannonActor());
+    // Make sure we have enough cannons in the pool
+    if (state.cannonsPool.totalCount < res) {
+      // Add more cannons until we reach the desired count
+      while (state.cannonsPool.totalCount < res) {
+        state.cannonsPool.add(CannonActor());
+      }
     }
 
     return res;

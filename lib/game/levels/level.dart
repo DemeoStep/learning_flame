@@ -25,6 +25,8 @@ class Level extends World
   @override
   final Vector2 actorSize = Consts.spaceSize;
 
+  int _lastFiredTimestamp = 0;
+
   @override
   Future<void> onLoad() async {
     final space = await riveComponentService.loadRiveComponent(this);
@@ -99,22 +101,26 @@ class Level extends World
 
   void _spawnCannon() {
     final cannonsPool = bloc.state.cannonsPool;
+    final activeCount = cannonsPool.activeCount;
+    final maxCannons = bloc.state.fireAtOnce;
+    final now = DateTime.now().millisecondsSinceEpoch;
 
-    if (cannonsPool.activeCount < bloc.state.fireAtOnce) {
+    // Check if enough time has passed since the last cannon fire
+    if (now - _lastFiredTimestamp < bloc.state.cannonReloadTime) {
+      return; // Still in cooldown period
+    }
+
+    // Check if we have fewer active cannons than fireAtOnce limit
+    if (activeCount < maxCannons && cannonsPool.poolSize > 0) {
       final cannon = cannonsPool.fromPool();
 
       if (cannon != null) {
-        cannonsPool.printPool();
-        add(cannon);
-      }
+        // Update the timestamp for the last fired cannon
+        _lastFiredTimestamp = now;
 
-      // if ((cannonsPool.lastActive != null &&
-      //         DateTime.now().millisecondsSinceEpoch -
-      //                 cannonsPool.lastActive!.firedAtTimestamp <
-      //             bloc.state.cannonReloadTime) ||
-      //     cannonsPool.activeCount >= bloc.state.fireAtOnce) {
-      //   return;
-      // }
+        add(cannon);
+        cannon.fire();
+      }
     }
   }
 
