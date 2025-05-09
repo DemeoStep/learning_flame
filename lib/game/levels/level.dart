@@ -1,22 +1,16 @@
 import 'dart:async';
 
 import 'package:flame/components.dart' hide Plane;
-import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/game/actors/asteroid.dart';
-import 'package:learning_flame/bloc/game_stats_cubit.dart';
-import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/game/actors/plane.dart';
 import 'package:learning_flame/game/fly_game.dart';
 
 class Level extends World
-    with
-        HasGameReference<FlyGame>,
-        KeyboardHandler
-        //FlameBlocReader<GameStatsCubit, GameStatsState>
+    with HasGameReference<FlyGame>, KeyboardHandler
     implements Actor {
   @override
   final String artBoardName = Consts.spaceArtBoardName;
@@ -26,6 +20,8 @@ class Level extends World
   final Vector2 actorSize = Consts.spaceSize;
 
   int _lastFiredTimestamp = 0;
+
+  DateTime _lastAsteroidSpawnedTime = DateTime(2000);
 
   @override
   Future<void> onLoad() async {
@@ -103,24 +99,21 @@ class Level extends World
     final cannonsPool = gameStatsCubit.state.cannonsPool;
     final activeCount = cannonsPool.activeCount;
     final maxCannons = gameStatsCubit.state.clipSize;
-    final now = DateTime.now().millisecondsSinceEpoch;
+    final now = DateTime.now();
 
     print(
       'Attempting to spawn cannon. Active: $activeCount, Max: $maxCannons, Pool: ${cannonsPool.poolSize}',
     );
 
-    // Check if enough time has passed since the last cannon fire
-    if (now - _lastFiredTimestamp < gameStatsCubit.state.cannonReloadTime) {
-      return; // Still in cooldown period
+    if (now.difference(_lastAsteroidSpawnedTime).inMinutes < gameStatsCubit.state.asteroidCount) {
+      return;
     }
 
-    // Check if we have fewer active cannons than fireAtOnce limit
     if (activeCount < maxCannons && cannonsPool.poolSize > 0) {
       final cannon = cannonsPool.fromPool();
 
       if (cannon != null) {
-        // Update the timestamp for the last fired cannon
-        _lastFiredTimestamp = now;
+        _lastAsteroidSpawnedTime = now;
 
         add(cannon);
         cannon.fire();
@@ -134,18 +127,38 @@ class Level extends World
     }
 
     final asteroidsPool = gameStatsCubit.state.asteroidsPool;
-
+    final maxAsteroids = gameStatsCubit.state.asteroidCount;
     final firedAsteroids = asteroidsPool.activeCount;
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    print(
+      'Attempting to spawn asteroid. Active: $firedAsteroids, Pool: ${asteroidsPool.poolSize}',
+    );
+
+    if (now - _lastFiredTimestamp < gameStatsCubit.state.cannonReloadTime) {
+      return;
+    }
 
     gameStatsCubit.addAsteroid();
 
-    if (firedAsteroids < gameStatsCubit.state.asteroidCount) {
+    if (firedAsteroids < maxAsteroids && asteroidsPool.poolSize > 0) {
       final asteroid = asteroidsPool.fromPool();
 
       if (asteroid != null) {
+        _lastFiredTimestamp = now;
+
         add(asteroid);
+        //asteroid.fire();
       }
     }
+
+    // if (firedAsteroids < gameStatsCubit.state.asteroidCount) {
+    //   final asteroid = asteroidsPool.fromPool();
+
+    //   if (asteroid != null) {
+    //     add(asteroid);
+    //   }
+    // }
   }
 
   void _removeResources() {

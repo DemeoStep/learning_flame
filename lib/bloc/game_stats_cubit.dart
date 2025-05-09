@@ -28,6 +28,12 @@ class GameStatsCubit extends Cubit<GameStatsState> {
       state.cannonsPool.add(cannon);
     }
 
+    for (var i = 0; i < Config.maxAsteroidCount; i++) {
+      final asteroid = AsteroidActor();
+      await asteroid.onLoad();
+      state.asteroidsPool.add(asteroid);
+    }
+
     Future.delayed(const Duration(seconds: 2), () {
       emit(state.copyWith(isGameStarted: true));
     });
@@ -84,21 +90,6 @@ class GameStatsCubit extends Cubit<GameStatsState> {
   }
 
   void addAsteroid() {
-    if (state.isGameOver) {
-      return;
-    }
-
-    final now = DateTime.now();
-
-    if (now.difference(state.gameStartTime) <
-        Duration(minutes: state.asteroidCount)) {
-      return;
-    }
-
-    if (state.asteroidsPool.totalCount < state.asteroidCount + 1) {
-      state.asteroidsPool.add(AsteroidActor());
-    }
-
     emit(state.copyWith(asteroidCount: state.asteroidCount + 1));
   }
 

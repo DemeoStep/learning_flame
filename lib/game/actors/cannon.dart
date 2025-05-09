@@ -1,9 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
-import 'package:learning_flame/bloc/game_stats_cubit.dart';
-import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/actor.dart';
@@ -12,7 +9,6 @@ import 'package:learning_flame/game/fly_game.dart';
 class CannonActor extends PositionComponent
     with
         HasGameReference<FlyGame>,
-        //FlameBlocReader<GameStatsCubit, GameStatsState>,
         CollisionCallbacks
     implements Actor {
   @override
@@ -74,7 +70,7 @@ class CannonActor extends PositionComponent
     position = _stackingPosition;
 
     hitBox.collisionType = CollisionType.inactive;
-    
+
     gameStatsCubit.state.cannonsPool.toPool(this);
     gameStatsCubit.state.cannonsPool.printPool();
   }

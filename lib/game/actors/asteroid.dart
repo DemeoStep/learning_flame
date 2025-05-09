@@ -2,23 +2,18 @@ import 'dart:math';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart' hide Plane;
-import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/game/actors/cannon.dart';
 import 'package:learning_flame/game/actors/plane.dart';
-import 'package:learning_flame/bloc/game_stats_cubit.dart';
-import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/fly_game.dart';
-import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
 
 class AsteroidActor extends PositionComponent
     with
         HasGameReference<FlyGame>,
         CollisionCallbacks
-        //FlameBlocReader<GameStatsCubit, GameStatsState>
     implements Actor {
   @override
   final String artBoardName = Consts.asteroidArtBoardName;
@@ -33,7 +28,7 @@ class AsteroidActor extends PositionComponent
 
   late int firedAtTimestamp;
 
-  late final RectangleHitbox hitBox;
+  late RectangleHitbox hitBox;
 
   late SMIBool isDestroyed;
 
@@ -75,8 +70,6 @@ class AsteroidActor extends PositionComponent
   }
 
   void destroyAsteroid() {
-    final asteroidsPool = gameStatsCubit.state.asteroidsPool;
-
     if (isDestroyed.value) return;
 
     isDestroyed.value = true;
@@ -89,7 +82,7 @@ class AsteroidActor extends PositionComponent
       isDestroyed.value = false;
       firedAtTimestamp = DateTime.now().microsecondsSinceEpoch;
       hitBox.collisionType = CollisionType.active;
-      asteroidsPool.toPool(this);
+      gameStatsCubit.state.asteroidsPool.toPool(this);
       position = _startPosition();
     });
   }

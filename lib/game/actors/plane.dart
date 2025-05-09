@@ -2,12 +2,9 @@ import 'dart:async';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/actor.dart';
-import 'package:learning_flame/bloc/game_stats_cubit.dart';
-import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/game/fly_game.dart';
 
@@ -15,7 +12,6 @@ class PlaneActor extends PositionComponent
     with
         HasGameReference<FlyGame>,
         CollisionCallbacks
-        //FlameBlocListenable<GameStatsCubit, GameStatsState>
     implements Actor {
   @override
   final String artBoardName = Consts.planeArtBoardName;
@@ -62,6 +58,7 @@ class PlaneActor extends PositionComponent
 
   @override
   update(double dt) {
+    _speed = gameStatsCubit.state.planeSpeed;
     switch (flyDirection) {
       case FlyDirection.left:
         if (position.x < 0) {
@@ -80,23 +77,6 @@ class PlaneActor extends PositionComponent
     }
 
     super.update(dt);
-  }
-
-  @override
-  void onNewState(state) {
-    _speed = state.planeSpeed;
-  }
-
-  @override
-  void onCollisionStart(
-    Set<Vector2> intersectionPoints,
-    PositionComponent other,
-  ) {
-    super.onCollisionStart(intersectionPoints, other);
-
-    // We'll handle the Asteroid collision in the Asteroid class
-    // This method is here for potential future use or if you want
-    // to handle additional collision logic for the GamePlane
   }
 }
 
