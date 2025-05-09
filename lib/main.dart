@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:learning_flame/bloc/game_stats_cubit.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/fly_game.dart';
 import 'package:learning_flame/presentation/score_overlay.dart';
@@ -42,8 +41,6 @@ void main() async {
     }
   }
 
-  final gameStatsCubit = GameStatsCubit();
-
   runApp(
     MaterialApp(
       home: BlocProvider(
@@ -51,7 +48,8 @@ void main() async {
         lazy: false,
         child: Scaffold(
           body: GameWidget(
-            game: FlyGame(cubit: gameStatsCubit),
+            //game: FlyGame(cubit: gameStatsCubit),
+            game: FlyGame(),
             overlayBuilderMap: {
               'score': (context, FlyGame game) => ScoreOverlay(game: game),
             },

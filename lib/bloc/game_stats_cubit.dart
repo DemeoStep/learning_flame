@@ -1,21 +1,30 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning_flame/bloc/game_stats_state.dart';
+import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/asteroid.dart';
 import 'package:learning_flame/game/actors/cannon.dart';
 import 'package:learning_flame/game/config.dart';
 import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
 
 class GameStatsCubit extends Cubit<GameStatsState> {
-  GameStatsCubit() : super(GameStatsState(
-    asteroidsPool: ActorsPool<AsteroidActor>(),
-    cannonsPool: ActorsPool<CannonActor>(),
-    gameStartTime: DateTime.now(),
-  ));
+  GameStatsCubit()
+    : super(
+        GameStatsState(
+          asteroidsPool: ActorsPool<AsteroidActor>(),
+          cannonsPool: ActorsPool<CannonActor>(),
+          gameStartTime: DateTime.now(),
+        ),
+      ) {
+    _gameStart();
+  }
 
-  void gameStart() {
+  void _gameStart() async {
+    // Ensure the RiveComponentService is fully initialized before creating components
+    await riveComponentService.ensureInitialized();
+
     for (var i = 0; i < Config.maxClipSize; i++) {
       final cannon = CannonActor();
-      //cannon.onLoad();
+      await cannon.onLoad();
       state.cannonsPool.add(cannon);
     }
 

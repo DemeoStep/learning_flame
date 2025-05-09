@@ -14,8 +14,8 @@ import 'package:learning_flame/game/fly_game.dart';
 class PlaneActor extends PositionComponent
     with
         HasGameReference<FlyGame>,
-        CollisionCallbacks,
-        FlameBlocListenable<GameStatsCubit, GameStatsState>
+        CollisionCallbacks
+        //FlameBlocListenable<GameStatsCubit, GameStatsState>
     implements Actor {
   @override
   final String artBoardName = Consts.planeArtBoardName;

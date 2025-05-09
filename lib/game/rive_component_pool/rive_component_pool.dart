@@ -17,19 +17,24 @@ class ActorsPool<T extends Actor> {
   }
 
   T? fromPool() {
-    if (_pool.isNotEmpty) {
-      final component = _pool.removeLast();
-      _active.add(component);
-      return component;
+    if (_pool.isEmpty) {
+      return null;
     }
 
-    return null;
+    final item = _pool.first;
+    _pool.remove(item);
+    _active.add(item);
+    return item;
   }
 
-  void toPool(T component) {
-    if (_active.contains(component)) {
-      _active.remove(component);
-      _pool.add(component);
+  void toPool(T item) {
+    // Make sure to remove from active and add to pool
+    if (_active.contains(item)) {
+      _active.remove(item);
+      _pool.add(item);
+    } else {
+      // If not already active, just add to pool
+      _pool.add(item);
     }
   }
 

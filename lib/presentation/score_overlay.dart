@@ -40,7 +40,7 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
     _messageShowTrigger = controller.getTriggerInput('ShowMessage')!;
     _messageHideTrigger = controller.getTriggerInput('HideMessage')!;
 
-    cubit.gameStart();
+    //cubit.gameStart();
   }
 
   @override

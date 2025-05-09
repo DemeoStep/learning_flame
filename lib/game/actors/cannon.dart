@@ -12,7 +12,7 @@ import 'package:learning_flame/game/fly_game.dart';
 class CannonActor extends PositionComponent
     with
         HasGameReference<FlyGame>,
-        FlameBlocReader<GameStatsCubit, GameStatsState>,
+        //FlameBlocReader<GameStatsCubit, GameStatsState>,
         CollisionCallbacks
     implements Actor {
   @override
@@ -28,8 +28,6 @@ class CannonActor extends PositionComponent
 
   late RectangleHitbox hitBox;
 
-  bool _isInitialized = false;
-
   bool visible = false;
 
   CannonActor();
@@ -39,8 +37,6 @@ class CannonActor extends PositionComponent
     cannon = await riveComponentService.loadRiveComponent(this);
 
     hitBox = RectangleHitbox(size: cannon.size);
-
-    _isInitialized = true;
 
     add(cannon);
     add(hitBox);
@@ -54,7 +50,7 @@ class CannonActor extends PositionComponent
       return;
     }
 
-    final speed = bloc.state.cannonSpeed;
+    final speed = gameStatsCubit.state.cannonSpeed;
     if (position.y < 0) {
       destroy();
     } else {
@@ -64,15 +60,11 @@ class CannonActor extends PositionComponent
   }
 
   void fire() async {
-    if (!_isInitialized) {
-      await onLoad();
-    }
-
     visible = true;
     position = _startingPosition;
     size = cannon.size;
 
-    firedAtTimestamp = DateTime.now().millisecondsSinceEpoch;
+    hitBox.collisionType = CollisionType.active;
 
     audioService.play(sound: Consts.gunFire);
   }
@@ -80,8 +72,11 @@ class CannonActor extends PositionComponent
   void destroy() {
     visible = false;
     position = _stackingPosition;
-    bloc.state.cannonsPool.toPool(this);
-    bloc.state.cannonsPool.printPool();
+
+    hitBox.collisionType = CollisionType.inactive;
+    
+    gameStatsCubit.state.cannonsPool.toPool(this);
+    gameStatsCubit.state.cannonsPool.printPool();
   }
 
   Vector2 get _startingPosition => Vector2(

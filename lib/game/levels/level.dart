@@ -15,8 +15,8 @@ import 'package:learning_flame/game/fly_game.dart';
 class Level extends World
     with
         HasGameReference<FlyGame>,
-        KeyboardHandler,
-        FlameBlocReader<GameStatsCubit, GameStatsState>
+        KeyboardHandler
+        //FlameBlocReader<GameStatsCubit, GameStatsState>
     implements Actor {
   @override
   final String artBoardName = Consts.spaceArtBoardName;
@@ -88,7 +88,7 @@ class Level extends World
 
   @override
   void update(double dt) {
-    if (!bloc.state.isGameOver) {
+    if (!gameStatsCubit.state.isGameOver) {
       _spawnAsteroid();
       if (game.plane.firing) {
         _spawnCannon();
@@ -100,13 +100,17 @@ class Level extends World
   }
 
   void _spawnCannon() {
-    final cannonsPool = bloc.state.cannonsPool;
+    final cannonsPool = gameStatsCubit.state.cannonsPool;
     final activeCount = cannonsPool.activeCount;
-    final maxCannons = bloc.state.clipSize;
+    final maxCannons = gameStatsCubit.state.clipSize;
     final now = DateTime.now().millisecondsSinceEpoch;
 
+    print(
+      'Attempting to spawn cannon. Active: $activeCount, Max: $maxCannons, Pool: ${cannonsPool.poolSize}',
+    );
+
     // Check if enough time has passed since the last cannon fire
-    if (now - _lastFiredTimestamp < bloc.state.cannonReloadTime) {
+    if (now - _lastFiredTimestamp < gameStatsCubit.state.cannonReloadTime) {
       return; // Still in cooldown period
     }
 
@@ -125,17 +129,17 @@ class Level extends World
   }
 
   void _spawnAsteroid() {
-    if (!bloc.state.isGameStarted) {
+    if (!gameStatsCubit.state.isGameStarted) {
       return;
     }
 
-    final asteroidsPool = bloc.state.asteroidsPool;
+    final asteroidsPool = gameStatsCubit.state.asteroidsPool;
 
     final firedAsteroids = asteroidsPool.activeCount;
 
-    bloc.addAsteroid();
+    gameStatsCubit.addAsteroid();
 
-    if (firedAsteroids < bloc.state.asteroidCount) {
+    if (firedAsteroids < gameStatsCubit.state.asteroidCount) {
       final asteroid = asteroidsPool.fromPool();
 
       if (asteroid != null) {

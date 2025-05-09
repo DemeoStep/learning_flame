@@ -17,8 +17,8 @@ import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart
 class AsteroidActor extends PositionComponent
     with
         HasGameReference<FlyGame>,
-        CollisionCallbacks,
-        FlameBlocReader<GameStatsCubit, GameStatsState>
+        CollisionCallbacks
+        //FlameBlocReader<GameStatsCubit, GameStatsState>
     implements Actor {
   @override
   final String artBoardName = Consts.asteroidArtBoardName;
@@ -65,17 +65,17 @@ class AsteroidActor extends PositionComponent
   update(double dt) {
     if (position.y > Consts.windowSize.height + Consts.asteroidSize.y) {
       if (!isDestroyed.value) {
-        bloc.decreaseScore();
+        gameStatsCubit.decreaseScore();
       }
       position = _startPosition();
     } else {
-      position.add(Vector2(0, bloc.state.asteroidSpeed * dt));
+      position.add(Vector2(0, gameStatsCubit.state.asteroidSpeed * dt));
     }
     super.update(dt);
   }
 
   void destroyAsteroid() {
-    final asteroidsPool = bloc.state.asteroidsPool;
+    final asteroidsPool = gameStatsCubit.state.asteroidsPool;
 
     if (isDestroyed.value) return;
 
@@ -104,11 +104,11 @@ class AsteroidActor extends PositionComponent
     if (other is CannonActor) {
       destroyAsteroid();
       other.destroy();
-      bloc.increaseScore();
+      gameStatsCubit.increaseScore();
     } else if (other is PlaneActor) {
       destroyAsteroid();
       other.hitTrigger.fire();
-      bloc.decreaseLive();
+      gameStatsCubit.decreaseLive();
     }
   }
 
