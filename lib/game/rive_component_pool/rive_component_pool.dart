@@ -30,7 +30,6 @@ class ActorsPool<T extends Actor> {
     if (_active.contains(component)) {
       _active.remove(component);
       _pool.add(component);
-      printPool();
     }
   }
 

@@ -127,12 +127,27 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
                         Row(
                           spacing: 5,
                           children: List.generate(
-                            state.fireAtOnce,
+                            state.clipSize - state.cannonsPool.activeCount,
                             (index) => SvgPicture.asset(
                               'assets/svg/cannon.svg',
                               height: 20,
                               colorFilter: ColorFilter.mode(
                                 Colors.white54,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Gap(5),
+                        Row(
+                          spacing: 5,
+                          children: List.generate(
+                            state.cannonsPool.activeCount,
+                            (index) => SvgPicture.asset(
+                              'assets/svg/cannon.svg',
+                              height: 20,
+                              colorFilter: ColorFilter.mode(
+                                Colors.white54.withValues(alpha: 0.5),
                                 BlendMode.srcIn,
                               ),
                             ),

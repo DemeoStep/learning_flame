@@ -31,12 +31,10 @@ class FlyGame extends FlameGame
 
     camera.viewfinder.anchor = Anchor.topLeft;
 
-    addAll([camera, world]);
-
     await add(
       FlameBlocProvider<GameStatsCubit, GameStatsState>(
         create: () => cubit,
-        children: [world],
+        children: [camera, world],
       ),
     );
 

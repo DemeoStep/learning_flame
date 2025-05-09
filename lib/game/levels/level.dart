@@ -102,7 +102,7 @@ class Level extends World
   void _spawnCannon() {
     final cannonsPool = bloc.state.cannonsPool;
     final activeCount = cannonsPool.activeCount;
-    final maxCannons = bloc.state.fireAtOnce;
+    final maxCannons = bloc.state.clipSize;
     final now = DateTime.now().millisecondsSinceEpoch;
 
     // Check if enough time has passed since the last cannon fire

@@ -42,6 +42,9 @@ class CannonActor extends PositionComponent
 
     _isInitialized = true;
 
+    add(cannon);
+    add(hitBox);
+
     super.onLoad();
   }
 
@@ -71,14 +74,6 @@ class CannonActor extends PositionComponent
 
     firedAtTimestamp = DateTime.now().millisecondsSinceEpoch;
 
-    if (!contains(cannon)) {
-      add(cannon);
-    }
-
-    if (!contains(hitBox)) {
-      add(hitBox);
-    }
-
     audioService.play(sound: Consts.gunFire);
   }
 
@@ -86,6 +81,7 @@ class CannonActor extends PositionComponent
     visible = false;
     position = _stackingPosition;
     bloc.state.cannonsPool.toPool(this);
+    bloc.state.cannonsPool.printPool();
   }
 
   Vector2 get _startingPosition => Vector2(

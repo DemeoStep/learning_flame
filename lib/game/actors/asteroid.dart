@@ -12,6 +12,7 @@ import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/fly_game.dart';
+import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
 
 class AsteroidActor extends PositionComponent
     with
@@ -66,7 +67,6 @@ class AsteroidActor extends PositionComponent
       if (!isDestroyed.value) {
         bloc.decreaseScore();
       }
-
       position = _startPosition();
     } else {
       position.add(Vector2(0, bloc.state.asteroidSpeed * dt));
@@ -75,21 +75,22 @@ class AsteroidActor extends PositionComponent
   }
 
   void destroyAsteroid() {
-    if (isDestroyed.value) return;
-
     final asteroidsPool = bloc.state.asteroidsPool;
 
+    if (isDestroyed.value) return;
+
     isDestroyed.value = true;
+
     hitBox.collisionType = CollisionType.inactive;
 
     audioService.play(sound: Consts.explosion);
 
     Future.delayed(Duration(milliseconds: 400)).then((_) {
-      asteroidsPool.toPool(this);
-      position = _startPosition();
       isDestroyed.value = false;
       firedAtTimestamp = DateTime.now().microsecondsSinceEpoch;
       hitBox.collisionType = CollisionType.active;
+      asteroidsPool.toPool(this);
+      position = _startPosition();
     });
   }
 
