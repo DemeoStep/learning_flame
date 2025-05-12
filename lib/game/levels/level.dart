@@ -7,6 +7,7 @@ import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/game/actors/asteroid.dart';
 import 'package:learning_flame/consts.dart';
+import 'package:learning_flame/game/actors/cannon.dart';
 import 'package:learning_flame/game/actors/plane.dart';
 import 'package:learning_flame/game/config.dart';
 import 'package:learning_flame/game/fly_game.dart';
@@ -26,6 +27,9 @@ class Level extends World
 
   DateTime _lastAsteroidSpawnedTime = DateTime(2000);
 
+  final asteroidsPool = ActorsPool<AsteroidActor>();
+  final cannonsPool = ActorsPool<CannonActor>();
+
   @override
   Future<void> onLoad() async {
     final space = await riveComponentService.loadRiveComponent(this);
@@ -33,8 +37,20 @@ class Level extends World
     add(space);
     add(game.plane);
 
-    addAll(gameStatsCubit.state.cannonsPool.pool);
-    addAll(gameStatsCubit.state.asteroidsPool.pool);
+    await riveComponentService.ensureInitialized();
+
+    for (var i = 0; i < Config.maxClipSize; i++) {
+      final cannon = CannonActor(cannonsPool: cannonsPool);
+      cannonsPool.add(cannon);
+    }
+
+    for (var i = 0; i < Config.maxAsteroidCount; i++) {
+      final asteroid = AsteroidActor(asteroidsPool: asteroidsPool);
+      asteroidsPool.add(asteroid);
+    }
+
+    addAll(cannonsPool.pool);
+    addAll(asteroidsPool.pool);
 
     add(
       KeyboardListenerComponent(
@@ -102,7 +118,6 @@ class Level extends World
   }
 
   void _spawnCannon() {
-    final cannonsPool = gameStatsCubit.state.cannonsPool;
     final activeCount = cannonsPool.activeCount;
     final maxCannons = gameStatsCubit.state.clipSize;
     final now = DateTime.now().millisecondsSinceEpoch;
@@ -147,8 +162,6 @@ class Level extends World
     }
 
     // Only spawn if we have fewer active asteroids than the target count
-    ActorsPool<AsteroidActor> asteroidsPool =
-        gameStatsCubit.state.asteroidsPool;
     int activeAsteroids = asteroidsPool.activeCount;
 
     if (activeAsteroids < targetAsteroidCount && asteroidsPool.poolSize > 0) {

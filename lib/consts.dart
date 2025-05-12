@@ -21,7 +21,7 @@ class Consts {
   static Vector2 asteroidSize = Vector2(30, 30);
 
   //Sounds
-  static const String gunFire = 'gun_fire.wav';
-  static const String explosion = 'explosion.mp3';
+  static const String gunFire = 'audio/gun_fire.wav';
+  static const String explosion = 'audio/explosion.wav';
   static const List<String> sounds = [gunFire, explosion];
 }

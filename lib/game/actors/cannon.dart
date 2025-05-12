@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_rive/flame_rive.dart';
@@ -5,6 +6,7 @@ import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/game/fly_game.dart';
+import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
 
 class CannonActor extends PositionComponent
     with HasGameReference<FlyGame>
@@ -24,7 +26,11 @@ class CannonActor extends PositionComponent
 
   bool isVisible = false;
 
-  CannonActor();
+  final player = AudioPlayer();
+
+  final ActorsPool<CannonActor> cannonsPool;
+
+  CannonActor({required this.cannonsPool});
 
   @override
   Future<void> onLoad() async {
@@ -34,6 +40,9 @@ class CannonActor extends PositionComponent
 
     add(cannon);
     add(hitBox);
+
+    await player.setReleaseMode(ReleaseMode.stop);
+    await player.setVolume(0.1);
 
     super.onLoad();
   }
@@ -60,7 +69,7 @@ class CannonActor extends PositionComponent
 
     hitBox.collisionType = CollisionType.active;
 
-    audioService.play(sound: Consts.gunFire);
+    player.play(AssetSource(Consts.gunFire));
   }
 
   void destroy() {
@@ -69,7 +78,7 @@ class CannonActor extends PositionComponent
 
     hitBox.collisionType = CollisionType.inactive;
 
-    gameStatsCubit.state.cannonsPool.toPool(this);
+    cannonsPool.toPool(this);
   }
 
   Vector2 get _startingPosition => Vector2(

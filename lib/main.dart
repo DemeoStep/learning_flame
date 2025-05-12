@@ -43,6 +43,7 @@ void main() async {
 
   runApp(
     MaterialApp(
+      showPerformanceOverlay: true,
       home: BlocProvider(
         create: (context) => gameStatsCubit,
         lazy: false,

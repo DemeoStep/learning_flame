@@ -19,8 +19,6 @@ abstract class GameStatsState with _$GameStatsState {
     @Default(Config.minCannonSpeed) int cannonSpeed,
     @Default(Config.minCannonReloadTime) int cannonReloadTime,
     @Default(Config.minPlaneSpeed) int planeSpeed,
-    required ActorsPool<AsteroidActor> asteroidsPool,
-    required ActorsPool<CannonActor> cannonsPool,
     required DateTime gameStartTime,
   }) = _GameStatsState;
 }

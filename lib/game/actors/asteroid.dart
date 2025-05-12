@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart' hide Plane;
 import 'package:flame_rive/flame_rive.dart';
@@ -9,6 +10,7 @@ import 'package:learning_flame/game/actors/plane.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/fly_game.dart';
+import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
 
 class AsteroidActor extends PositionComponent
     with HasGameReference<FlyGame>, CollisionCallbacks
@@ -26,9 +28,20 @@ class AsteroidActor extends PositionComponent
 
   bool isVisible = false;
 
+  static final Random _random = Random();
+
+  final ActorsPool<AsteroidActor> asteroidsPool;
+
+  final player = AudioPlayer();
+
+  AsteroidActor({required this.asteroidsPool});
+
   @override
   Future<void> onLoad() async {
     position = _startPosition();
+
+    await player.setReleaseMode(ReleaseMode.stop);
+    await player.setVolume(0.1);
 
     final asteroid = await riveComponentService.loadRiveComponent(this);
 
@@ -46,7 +59,7 @@ class AsteroidActor extends PositionComponent
     add(asteroid);
     add(hitBox);
 
-    super.onLoad();
+    await super.onLoad();
   }
 
   @override
@@ -74,14 +87,16 @@ class AsteroidActor extends PositionComponent
 
     hitBox.collisionType = CollisionType.inactive;
 
-    audioService.play(sound: Consts.explosion);
+    player.play(AssetSource(Consts.explosion));
 
-    Future.delayed(Duration(milliseconds: 400)).then((_) {
-      gameStatsCubit.state.asteroidsPool.toPool(this);
-      position = _startPosition();
-      hitBox.collisionType = CollisionType.active;
-      isDestroyed.value = false;
-    });
+    Future.delayed(Duration(milliseconds: 400), _resetAsteroid);
+  }
+
+  void _resetAsteroid() {
+    asteroidsPool.toPool(this);
+    position = _startPosition();
+    hitBox.collisionType = CollisionType.active;
+    isDestroyed.value = false;
   }
 
   @override
@@ -103,5 +118,5 @@ class AsteroidActor extends PositionComponent
   }
 
   Vector2 _startPosition() =>
-      Vector2(35 + Random().nextInt(500).toDouble(), -100);
+      Vector2(35 + _random.nextInt(500).toDouble(), -100);
 }

@@ -10,8 +10,6 @@ class GameStatsCubit extends Cubit<GameStatsState> {
   GameStatsCubit()
     : super(
         GameStatsState(
-          asteroidsPool: ActorsPool<AsteroidActor>(),
-          cannonsPool: ActorsPool<CannonActor>(),
           gameStartTime: DateTime.now(),
         ),
       ) {
@@ -19,18 +17,6 @@ class GameStatsCubit extends Cubit<GameStatsState> {
   }
 
   void _gameStart() async {
-    await riveComponentService.ensureInitialized();
-
-    for (var i = 0; i < Config.maxClipSize; i++) {
-      final cannon = CannonActor();
-      state.cannonsPool.add(cannon);
-    }
-
-    for (var i = 0; i < Config.maxAsteroidCount; i++) {
-      final asteroid = AsteroidActor();
-      state.asteroidsPool.add(asteroid);
-    }
-
     Future.delayed(const Duration(seconds: 2), () {
       emit(state.copyWith(isGameStarted: true));
     });
@@ -116,15 +102,8 @@ class GameStatsCubit extends Cubit<GameStatsState> {
   }
 
   int _calculateClipSize(int score) {
-    final res = 3 + (score.clamp(0, 200) ~/ 5);
+    final res = Config.minClipSize + (score.clamp(0, 200) ~/ 5);
 
-    if (state.cannonsPool.totalCount < res &&
-        state.cannonsPool.totalCount < Config.maxClipSize) {
-      while (state.cannonsPool.totalCount < res) {
-        state.cannonsPool.add(CannonActor());
-      }
-    }
-
-    return res.clamp(3, Config.maxClipSize);
+    return res.clamp(Config.minClipSize, Config.maxClipSize);
   }
 }

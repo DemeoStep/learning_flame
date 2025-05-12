@@ -23,11 +23,39 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
   SMITrigger? _messageShowTrigger;
   SMITrigger? _messageHideTrigger;
 
+  late final RiveAnimation messageAnimation;
+  late final SvgPicture planeSvg;
+  late final SvgPicture cannonSvg;
+
   TextValueRun? levelValue;
 
   int level = 0;
 
-  void _onInit(Artboard artboard, GameStatsCubit cubit) {
+  @override
+  void initState() {
+    super.initState();
+
+    planeSvg = SvgPicture.asset(
+      'assets/svg/plane.svg',
+      height: 30,
+      colorFilter: const ColorFilter.mode(Colors.white54, BlendMode.srcIn),
+    );
+
+    cannonSvg = SvgPicture.asset(
+      'assets/svg/cannon.svg',
+      height: 30,
+      colorFilter: const ColorFilter.mode(Colors.white54, BlendMode.srcIn),
+    );
+
+    messageAnimation = RiveAnimation.direct(
+      riveComponentService.file,
+      artboard: 'Message',
+      stateMachines: ['MessageSM'],
+      onInit: _onInit,
+    );
+  }
+
+  void _onInit(Artboard artboard) {
     final controller = StateMachineController.fromArtboard(
       artboard,
       'MessageSM',
@@ -39,8 +67,6 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
 
     _messageShowTrigger = controller.getTriggerInput('ShowMessage')!;
     _messageHideTrigger = controller.getTriggerInput('HideMessage')!;
-
-    //cubit.gameStart();
   }
 
   @override
@@ -48,28 +74,30 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(10),
-        child: BlocBuilder<GameStatsCubit, GameStatsState>(
-          builder: (context, state) {
-            if (state.isGameOver) {
-              levelValue?.text = 'Game Over';
-              _messageShowTrigger?.fire();
-            }
+        child: Stack(
+          children: [
+            BlocConsumer<GameStatsCubit, GameStatsState>(
+              listener: (context, state) {
+                if (state.isGameOver) {
+                  levelValue?.text = 'Game Over';
+                  _messageShowTrigger?.fire();
+                }
 
-            if (state.asteroidCount > level) {
-              if (levelValue != null) {
-                level = state.asteroidCount;
+                if (state.asteroidCount > level) {
+                  if (levelValue != null) {
+                    level = state.asteroidCount;
 
-                levelValue?.text = 'Level $level';
-                _messageShowTrigger?.fire();
+                    levelValue?.text = 'Level $level';
+                    _messageShowTrigger?.fire();
 
-                Future.delayed(const Duration(seconds: 2), () {
-                  _messageHideTrigger?.fire();
-                });
-              }
-            }
-            return Stack(
-              children: [
-                Column(
+                    Future.delayed(const Duration(seconds: 2), () {
+                      _messageHideTrigger?.fire();
+                    });
+                  }
+                }
+              },
+              builder: (context, state) {
+                return Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -108,14 +136,7 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
                         Row(
                           children: List.generate(
                             state.lives,
-                            (index) => SvgPicture.asset(
-                              'assets/svg/plane.svg',
-                              height: 30,
-                              colorFilter: ColorFilter.mode(
-                                Colors.white54,
-                                BlendMode.srcIn,
-                              ),
-                            ),
+                            (index) => planeSvg,
                           ),
                         ),
                       ],
@@ -127,50 +148,18 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
                         Row(
                           spacing: 5,
                           children: List.generate(
-                            state.clipSize - state.cannonsPool.activeCount,
-                            (index) => SvgPicture.asset(
-                              'assets/svg/cannon.svg',
-                              height: 20,
-                              colorFilter: ColorFilter.mode(
-                                Colors.white54,
-                                BlendMode.srcIn,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const Gap(5),
-                        Row(
-                          spacing: 5,
-                          children: List.generate(
-                            state.cannonsPool.activeCount,
-                            (index) => SvgPicture.asset(
-                              'assets/svg/cannon.svg',
-                              height: 20,
-                              colorFilter: ColorFilter.mode(
-                                Colors.white54.withValues(alpha: 0.5),
-                                BlendMode.srcIn,
-                              ),
-                            ),
+                            state.clipSize,
+                            (index) => cannonSvg,
                           ),
                         ),
                       ],
                     ),
                   ],
-                ),
-                Positioned.fill(
-                  child: RiveAnimation.direct(
-                    riveComponentService.file,
-                    artboard: 'Message',
-                    // fit: BoxFit.fill,
-                    stateMachines: ['MessageSM'],
-                    onInit:
-                        (artboard) =>
-                            _onInit(artboard, context.read<GameStatsCubit>()),
-                  ),
-                ),
-              ],
-            );
-          },
+                );
+              },
+            ),
+            Positioned.fill(child: messageAnimation),
+          ],
         ),
       ),
     );
