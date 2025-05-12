@@ -11,9 +11,7 @@ import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/fly_game.dart';
 
 class AsteroidActor extends PositionComponent
-    with
-        HasGameReference<FlyGame>,
-        CollisionCallbacks
+    with HasGameReference<FlyGame>, CollisionCallbacks
     implements Actor {
   @override
   final String artBoardName = Consts.asteroidArtBoardName;
@@ -22,20 +20,15 @@ class AsteroidActor extends PositionComponent
   @override
   final Vector2 actorSize = Consts.asteroidSize;
 
-  late final RiveComponent asteroid;
-
-  int reloadTime = 10000000;
-
-  late int firedAtTimestamp;
-
   late RectangleHitbox hitBox;
 
   late SMIBool isDestroyed;
 
+  bool isVisible = false;
+
   @override
   Future<void> onLoad() async {
     position = _startPosition();
-    firedAtTimestamp = DateTime.now().microsecondsSinceEpoch;
 
     final asteroid = await riveComponentService.loadRiveComponent(this);
 
@@ -58,6 +51,10 @@ class AsteroidActor extends PositionComponent
 
   @override
   update(double dt) {
+    if (!isVisible) {
+      return;
+    }
+
     if (position.y > Consts.windowSize.height + Consts.asteroidSize.y) {
       if (!isDestroyed.value) {
         gameStatsCubit.decreaseScore();
@@ -71,6 +68,7 @@ class AsteroidActor extends PositionComponent
 
   void destroyAsteroid() {
     if (isDestroyed.value) return;
+    isVisible = false;
 
     isDestroyed.value = true;
 
@@ -79,11 +77,10 @@ class AsteroidActor extends PositionComponent
     audioService.play(sound: Consts.explosion);
 
     Future.delayed(Duration(milliseconds: 400)).then((_) {
-      isDestroyed.value = false;
-      firedAtTimestamp = DateTime.now().microsecondsSinceEpoch;
-      hitBox.collisionType = CollisionType.active;
       gameStatsCubit.state.asteroidsPool.toPool(this);
       position = _startPosition();
+      hitBox.collisionType = CollisionType.active;
+      isDestroyed.value = false;
     });
   }
 
@@ -105,5 +102,6 @@ class AsteroidActor extends PositionComponent
     }
   }
 
-  Vector2 _startPosition() => Vector2(35 + Random().nextInt(500).toDouble(), 0);
+  Vector2 _startPosition() =>
+      Vector2(35 + Random().nextInt(500).toDouble(), -100);
 }

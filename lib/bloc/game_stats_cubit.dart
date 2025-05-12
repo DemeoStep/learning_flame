@@ -19,18 +19,15 @@ class GameStatsCubit extends Cubit<GameStatsState> {
   }
 
   void _gameStart() async {
-    // Ensure the RiveComponentService is fully initialized before creating components
     await riveComponentService.ensureInitialized();
 
     for (var i = 0; i < Config.maxClipSize; i++) {
       final cannon = CannonActor();
-      await cannon.onLoad();
       state.cannonsPool.add(cannon);
     }
 
     for (var i = 0; i < Config.maxAsteroidCount; i++) {
       final asteroid = AsteroidActor();
-      await asteroid.onLoad();
       state.asteroidsPool.add(asteroid);
     }
 
@@ -57,20 +54,20 @@ class GameStatsCubit extends Cubit<GameStatsState> {
   }
 
   void decreaseScore() {
-    if (state.isGameOver) {
-      return;
-    }
-    final score = state.score >= 2 ? state.score - 2 : 0;
-    emit(
-      state.copyWith(
-        score: score,
-        planeSpeed: _calculatePlaneSpeed(score),
-        cannonSpeed: _calculateCannonSpeed(score),
-        cannonReloadTime: _calculateCannonReloadTime(score),
-        asteroidSpeed: _calculateAsteroidSpeed(),
-        clipSize: _calculateClipSize(score),
-      ),
-    );
+    // if (state.isGameOver) {
+    //   return;
+    // }
+    // final score = state.score >= 2 ? state.score - 2 : 0;
+    // emit(
+    //   state.copyWith(
+    //     score: score,
+    //     planeSpeed: _calculatePlaneSpeed(score),
+    //     cannonSpeed: _calculateCannonSpeed(score),
+    //     cannonReloadTime: _calculateCannonReloadTime(score),
+    //     asteroidSpeed: _calculateAsteroidSpeed(),
+    //     clipSize: _calculateClipSize(score),
+    //   ),
+    // );
   }
 
   void decreaseLive() {
@@ -89,8 +86,8 @@ class GameStatsCubit extends Cubit<GameStatsState> {
     );
   }
 
-  void addAsteroid() {
-    emit(state.copyWith(asteroidCount: state.asteroidCount + 1));
+  void setAsteroidCount(int count) {
+    emit(state.copyWith(asteroidCount: count));
   }
 
   int _calculatePlaneSpeed(int score) {
@@ -98,7 +95,12 @@ class GameStatsCubit extends Cubit<GameStatsState> {
   }
 
   int _calculateCannonSpeed(int score) {
-    return 100 + (score.clamp(0, 400) ~/ 10) * 10;
+    final result = 100 + (score.clamp(0, 400) ~/ 10) * 10;
+    return result < Config.minCannonSpeed
+        ? Config.minCannonSpeed
+        : result > Config.maxCannonSpeed
+        ? Config.maxCannonSpeed
+        : result;
   }
 
   int _calculateCannonReloadTime(int score) {

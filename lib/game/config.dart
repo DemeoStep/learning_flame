@@ -8,11 +8,11 @@ class Config {
 
   static const int minCannonSpeed = 100;
   static const int maxCannonSpeed = 500;
-  static const int minCannonReloadTime = 100;
+  static const int minCannonReloadTime = 200;
   static const int maxCannonReloadTime = 500;
 
   static const int minAsteroidSpeed = 100;
   static const int maxAsteroidSpeed = 500;
 
-  static const int maxAsteroidCount = 7;
+  static const int maxAsteroidCount = 4;
 }

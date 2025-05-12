@@ -5,6 +5,8 @@ class ActorsPool<T extends Actor> {
 
   final List<T> _active = [];
 
+  List<T> get pool => _pool.toList();
+
   int get poolSize => _pool.length;
   int get activeCount => _active.length;
 
@@ -36,9 +38,5 @@ class ActorsPool<T extends Actor> {
       // If not already active, just add to pool
       _pool.add(item);
     }
-  }
-
-  void printPool() {
-    print('Active: $activeCount\nPool: $poolSize\nTotal: $totalCount');
   }
 }

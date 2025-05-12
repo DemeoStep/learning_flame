@@ -7,9 +7,7 @@ import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/game/fly_game.dart';
 
 class CannonActor extends PositionComponent
-    with
-        HasGameReference<FlyGame>,
-        CollisionCallbacks
+    with HasGameReference<FlyGame>
     implements Actor {
   @override
   final String artBoardName = Consts.cannonArtBoardName;
@@ -24,7 +22,7 @@ class CannonActor extends PositionComponent
 
   late RectangleHitbox hitBox;
 
-  bool visible = false;
+  bool isVisible = false;
 
   CannonActor();
 
@@ -42,7 +40,7 @@ class CannonActor extends PositionComponent
 
   @override
   update(double dt) {
-    if (!visible) {
+    if (!isVisible) {
       return;
     }
 
@@ -56,7 +54,7 @@ class CannonActor extends PositionComponent
   }
 
   void fire() async {
-    visible = true;
+    isVisible = true;
     position = _startingPosition;
     size = cannon.size;
 
@@ -66,13 +64,12 @@ class CannonActor extends PositionComponent
   }
 
   void destroy() {
-    visible = false;
+    isVisible = false;
     position = _stackingPosition;
 
     hitBox.collisionType = CollisionType.inactive;
 
     gameStatsCubit.state.cannonsPool.toPool(this);
-    gameStatsCubit.state.cannonsPool.printPool();
   }
 
   Vector2 get _startingPosition => Vector2(
@@ -80,8 +77,5 @@ class CannonActor extends PositionComponent
     game.plane.position.y,
   );
 
-  Vector2 get _stackingPosition => Vector2(
-    game.plane.position.x - 2 + Consts.planeSize.x / 2,
-    game.plane.position.y + 150,
-  );
+  Vector2 get _stackingPosition => Vector2(-20, -20);
 }

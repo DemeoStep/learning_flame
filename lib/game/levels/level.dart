@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flame/components.dart' hide Plane;
 import 'package:flutter/services.dart';
@@ -7,7 +8,9 @@ import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/game/actors/asteroid.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/game/actors/plane.dart';
+import 'package:learning_flame/game/config.dart';
 import 'package:learning_flame/game/fly_game.dart';
+import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
 
 class Level extends World
     with HasGameReference<FlyGame>, KeyboardHandler
@@ -29,6 +32,9 @@ class Level extends World
 
     add(space);
     add(game.plane);
+
+    addAll(gameStatsCubit.state.cannonsPool.pool);
+    addAll(gameStatsCubit.state.asteroidsPool.pool);
 
     add(
       KeyboardListenerComponent(
@@ -99,13 +105,9 @@ class Level extends World
     final cannonsPool = gameStatsCubit.state.cannonsPool;
     final activeCount = cannonsPool.activeCount;
     final maxCannons = gameStatsCubit.state.clipSize;
-    final now = DateTime.now();
+    final now = DateTime.now().millisecondsSinceEpoch;
 
-    print(
-      'Attempting to spawn cannon. Active: $activeCount, Max: $maxCannons, Pool: ${cannonsPool.poolSize}',
-    );
-
-    if (now.difference(_lastAsteroidSpawnedTime).inMinutes < gameStatsCubit.state.asteroidCount) {
+    if (now - _lastFiredTimestamp < gameStatsCubit.state.cannonReloadTime) {
       return;
     }
 
@@ -113,52 +115,50 @@ class Level extends World
       final cannon = cannonsPool.fromPool();
 
       if (cannon != null) {
-        _lastAsteroidSpawnedTime = now;
-
-        add(cannon);
+        _lastFiredTimestamp = now;
         cannon.fire();
       }
     }
   }
 
   void _spawnAsteroid() {
-    if (!gameStatsCubit.state.isGameStarted) {
+    final now = DateTime.now();
+    final timeSinceLastSpawn =
+        now.difference(_lastAsteroidSpawnedTime).inMilliseconds;
+
+    // Rate limit: only spawn once per second
+    if (timeSinceLastSpawn < 1000) {
       return;
     }
 
-    final asteroidsPool = gameStatsCubit.state.asteroidsPool;
-    final maxAsteroids = gameStatsCubit.state.asteroidCount;
-    final firedAsteroids = asteroidsPool.activeCount;
-    final now = DateTime.now().millisecondsSinceEpoch;
+    if (!gameStatsCubit.state.isGameStarted ||
+        gameStatsCubit.state.isGameOver) {
+      return;
+    }
 
-    print(
-      'Attempting to spawn asteroid. Active: $firedAsteroids, Pool: ${asteroidsPool.poolSize}',
+    // Maintain asteroid count at desired level (usually 1)
+    final targetAsteroidCount = math.min(
+      Config.maxAsteroidCount,
+      1 + (now.difference(gameStatsCubit.state.gameStartTime).inMinutes ~/ 2),
     );
 
-    if (now - _lastFiredTimestamp < gameStatsCubit.state.cannonReloadTime) {
-      return;
+    if (gameStatsCubit.state.asteroidCount != targetAsteroidCount) {
+      gameStatsCubit.setAsteroidCount(targetAsteroidCount);
     }
 
-    gameStatsCubit.addAsteroid();
+    // Only spawn if we have fewer active asteroids than the target count
+    ActorsPool<AsteroidActor> asteroidsPool =
+        gameStatsCubit.state.asteroidsPool;
+    int activeAsteroids = asteroidsPool.activeCount;
 
-    if (firedAsteroids < maxAsteroids && asteroidsPool.poolSize > 0) {
+    if (activeAsteroids < targetAsteroidCount && asteroidsPool.poolSize > 0) {
+      _lastAsteroidSpawnedTime = now;
+
       final asteroid = asteroidsPool.fromPool();
-
       if (asteroid != null) {
-        _lastFiredTimestamp = now;
-
-        add(asteroid);
-        //asteroid.fire();
+        asteroid.isVisible = true;
       }
     }
-
-    // if (firedAsteroids < gameStatsCubit.state.asteroidCount) {
-    //   final asteroid = asteroidsPool.fromPool();
-
-    //   if (asteroid != null) {
-    //     add(asteroid);
-    //   }
-    // }
   }
 
   void _removeResources() {
