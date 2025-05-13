@@ -5,7 +5,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/fly_game.dart';
 import 'package:learning_flame/presentation/score_overlay.dart';
@@ -41,22 +41,24 @@ void main() async {
     }
   }
 
-  runApp(
-    MaterialApp(
+  runApp(ProviderScope(child: MyApp()));
+}
+
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp(
       showPerformanceOverlay: kDebugMode,
-      home: BlocProvider(
-        create: (context) => gameStatsCubit,
-        lazy: false,
-        child: Scaffold(
-          body: GameWidget(
-            //game: FlyGame(cubit: gameStatsCubit),
-            game: FlyGame(),
-            overlayBuilderMap: {
-              'score': (context, FlyGame game) => ScoreOverlay(game: game),
-            },
-          ),
+      home: Scaffold(
+        body: GameWidget(
+          game: FlyGame(ref),
+          overlayBuilderMap: {
+            'score': (context, FlyGame game) => ScoreOverlay(game: game),
+          },
         ),
       ),
-    ),
-  );
+    );
+  }
 }

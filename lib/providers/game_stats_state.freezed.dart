@@ -87,7 +87,7 @@ as DateTime,
 
 
 class _GameStatsState implements GameStatsState {
-   _GameStatsState({this.isGameOver = false, this.isGameStarted = false, this.score = 0, this.clipSize = Config.minClipSize, this.lives = Config.startLives, this.asteroidCount = 0, this.asteroidSpeed = Config.minAsteroidSpeed, this.cannonSpeed = Config.minCannonSpeed, this.cannonReloadTime = Config.minCannonReloadTime, this.planeSpeed = Config.minPlaneSpeed, required this.gameStartTime});
+   _GameStatsState({this.isGameOver = false, this.isGameStarted = false, this.score = 0, this.clipSize = Config.minClipSize, this.lives = Config.startLives, this.asteroidCount = 0, this.asteroidSpeed = Config.minAsteroidSpeed, this.cannonSpeed = Config.minCannonSpeed, this.cannonReloadTime = Config.maxCannonReloadTime, this.planeSpeed = Config.minPlaneSpeed, required this.gameStartTime});
   
 
 @override@JsonKey() final  bool isGameOver;

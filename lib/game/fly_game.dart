@@ -3,6 +3,7 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/game/levels/level.dart';
@@ -15,6 +16,13 @@ class FlyGame extends FlameGame
   late final PlaneActor plane;
 
   bool isPaused = false;
+
+  // Add a static ref for global access (not best practice, but works for Flame integration)
+  static late WidgetRef ref;
+
+  FlyGame(WidgetRef refInstance) {
+    ref = refInstance;
+  }
 
   @override
   Future<void> onLoad() async {

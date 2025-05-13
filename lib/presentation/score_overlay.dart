@@ -1,25 +1,23 @@
 import 'package:learning_flame/core/di.dart';
 import 'package:rive/rive.dart';
-
 import 'package:flame_rive/flame_rive.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import 'package:learning_flame/bloc/game_stats_cubit.dart';
-import 'package:learning_flame/bloc/game_stats_state.dart';
 import 'package:learning_flame/game/fly_game.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:learning_flame/providers/game_stats_provider.dart';
 
-class ScoreOverlay extends StatefulWidget {
+class ScoreOverlay extends ConsumerStatefulWidget {
   final FlyGame game;
 
   const ScoreOverlay({required this.game, super.key});
 
   @override
-  State<ScoreOverlay> createState() => _ScoreOverlayState();
+  ConsumerState<ScoreOverlay> createState() => _ScoreOverlayState();
 }
 
-class _ScoreOverlayState extends State<ScoreOverlay> {
+class _ScoreOverlayState extends ConsumerState<ScoreOverlay> {
   SMITrigger? _messageShowTrigger;
   SMITrigger? _messageHideTrigger;
 
@@ -71,92 +69,80 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(gameStatsProvider);
+
+    // Handle level and game over messages
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (state.isGameOver) {
+        levelValue?.text = 'Game Over';
+        _messageShowTrigger?.fire();
+      }
+      if (state.asteroidCount > level) {
+        if (levelValue != null) {
+          level = state.asteroidCount;
+          levelValue?.text = 'Level $level';
+          _messageShowTrigger?.fire();
+          Future.delayed(const Duration(seconds: 2), () {
+            _messageHideTrigger?.fire();
+          });
+        }
+      }
+    });
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Stack(
           children: [
-            BlocConsumer<GameStatsCubit, GameStatsState>(
-              listener: (context, state) {
-                if (state.isGameOver) {
-                  levelValue?.text = 'Game Over';
-                  _messageShowTrigger?.fire();
-                }
-
-                if (state.asteroidCount > level) {
-                  if (levelValue != null) {
-                    level = state.asteroidCount;
-
-                    levelValue?.text = 'Level $level';
-                    _messageShowTrigger?.fire();
-
-                    Future.delayed(const Duration(seconds: 2), () {
-                      _messageHideTrigger?.fire();
-                    });
-                  }
-                }
-              },
-              builder: (context, state) {
-                return Column(
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Score:',
-                          style: TextStyle(fontSize: 20, color: Colors.white),
-                        ),
-                        const Gap(5),
-                        Text(
-                          state.score.toString(),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const Gap(20),
-                        const Text(
-                          'Speed:',
-                          style: TextStyle(fontSize: 20, color: Colors.white),
-                        ),
-                        const Gap(5),
-                        Text(
-                          state.planeSpeed.toString(),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const Gap(20),
-                        const Text(
-                          'Lives:',
-                          style: TextStyle(fontSize: 20, color: Colors.white),
-                        ),
-                        const Gap(5),
-                        Row(
-                          children: List.generate(
-                            state.lives,
-                            (index) => planeSvg,
-                          ),
-                        ),
-                      ],
+                    const Text(
+                      'Score:',
+                      style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
-                    const Spacer(),
+                    const Gap(5),
+                    Text(
+                      state.score.toString(),
+                      style: const TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                    const Gap(20),
+                    const Text(
+                      'Speed:',
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                    const Gap(5),
+                    Text(
+                      state.planeSpeed.toString(),
+                      style: const TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                    const Gap(20),
+                    const Text(
+                      'Lives:',
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                    const Gap(5),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
-                          spacing: 5,
-                          children: List.generate(
-                            state.clipSize,
-                            (index) => cannonSvg,
-                          ),
-                        ),
-                      ],
+                      children: List.generate(state.lives, (index) => planeSvg),
                     ),
                   ],
-                );
-              },
+                ),
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Row(
+                      spacing: 5,
+                      children: List.generate(
+                        state.clipSize,
+                        (index) => cannonSvg,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
             Positioned.fill(child: messageAnimation),
           ],

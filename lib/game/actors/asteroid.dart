@@ -10,6 +10,7 @@ import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/fly_game.dart';
 import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
+import 'package:learning_flame/providers/game_stats_provider.dart';
 
 class AsteroidActor extends PositionComponent
     with HasGameReference<FlyGame>, CollisionCallbacks
@@ -64,11 +65,12 @@ class AsteroidActor extends PositionComponent
 
     if (position.y > Consts.windowSize.height + Consts.asteroidSize.y) {
       if (!isDestroyed.value) {
-        gameStatsCubit.decreaseScore();
+        FlyGame.ref.read(gameStatsProvider.notifier).decreaseScore();
       }
       position = _startPosition();
     } else {
-      position.add(Vector2(0, gameStatsCubit.state.asteroidSpeed * dt));
+      final speed = FlyGame.ref.read(gameStatsProvider).asteroidSpeed;
+      position.add(Vector2(0, speed * dt));
     }
     super.update(dt);
   }
@@ -103,11 +105,11 @@ class AsteroidActor extends PositionComponent
     if (other is CannonActor) {
       destroyAsteroid();
       other.destroy();
-      gameStatsCubit.increaseScore();
+      FlyGame.ref.read(gameStatsProvider.notifier).increaseScore();
     } else if (other is PlaneActor) {
       destroyAsteroid();
       other.hitTrigger.fire();
-      gameStatsCubit.decreaseLive();
+      FlyGame.ref.read(gameStatsProvider.notifier).decreaseLive();
     }
   }
 

@@ -12,6 +12,7 @@ import 'package:learning_flame/game/actors/plane.dart';
 import 'package:learning_flame/game/config.dart';
 import 'package:learning_flame/game/fly_game.dart';
 import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
+import 'package:learning_flame/providers/game_stats_provider.dart';
 
 class Level extends World
     with HasGameReference<FlyGame>, KeyboardHandler
@@ -51,6 +52,12 @@ class Level extends World
 
     addAll(cannonsPool.pool);
     addAll(asteroidsPool.pool);
+
+    // Set game as started and set start time
+    FlyGame.ref.read(gameStatsProvider.notifier).setGameStarted(true);
+    FlyGame.ref
+        .read(gameStatsProvider.notifier)
+        .setGameStartTime(DateTime.now());
 
     add(
       KeyboardListenerComponent(
@@ -107,7 +114,8 @@ class Level extends World
   @override
   void update(double dt) {
     if (game.isPaused) return;
-    if (!gameStatsCubit.state.isGameOver) {
+    final gameStats = FlyGame.ref.read(gameStatsProvider);
+    if (!gameStats.isGameOver) {
       _spawnAsteroid();
       if (game.plane.firing) {
         _spawnCannon();
@@ -119,11 +127,12 @@ class Level extends World
   }
 
   void _spawnCannon() {
+    final gameStats = FlyGame.ref.read(gameStatsProvider);
     final activeCount = cannonsPool.activeCount;
-    final maxCannons = gameStatsCubit.state.clipSize;
+    final maxCannons = gameStats.clipSize;
     final now = DateTime.now().millisecondsSinceEpoch;
 
-    if (now - _lastFiredTimestamp < gameStatsCubit.state.cannonReloadTime) {
+    if (now - _lastFiredTimestamp < gameStats.cannonReloadTime) {
       return;
     }
 
@@ -139,30 +148,29 @@ class Level extends World
 
   void _spawnAsteroid() {
     final now = DateTime.now();
+    final gameStats = FlyGame.ref.read(gameStatsProvider);
     final timeSinceLastSpawn =
         now.difference(_lastAsteroidSpawnedTime).inMilliseconds;
 
-    // Rate limit: only spawn once per second
-    if (timeSinceLastSpawn < 1000) {
+    if (timeSinceLastSpawn < Config.maxAsteroidSpeed) {
       return;
     }
 
-    if (!gameStatsCubit.state.isGameStarted ||
-        gameStatsCubit.state.isGameOver) {
+    if (!gameStats.isGameStarted || gameStats.isGameOver) {
       return;
     }
 
-    // Maintain asteroid count at desired level (usually 1)
     final targetAsteroidCount = math.min(
       Config.maxAsteroidCount,
-      1 + (now.difference(gameStatsCubit.state.gameStartTime).inMinutes ~/ 2),
+      1 + (now.difference(gameStats.gameStartTime).inMinutes),
     );
 
-    if (gameStatsCubit.state.asteroidCount != targetAsteroidCount) {
-      gameStatsCubit.setAsteroidCount(targetAsteroidCount);
+    if (gameStats.asteroidCount != targetAsteroidCount) {
+      FlyGame.ref
+          .read(gameStatsProvider.notifier)
+          .setAsteroidCount(targetAsteroidCount);
     }
 
-    // Only spawn if we have fewer active asteroids than the target count
     int activeAsteroids = asteroidsPool.activeCount;
 
     if (activeAsteroids < targetAsteroidCount && asteroidsPool.poolSize > 0) {
