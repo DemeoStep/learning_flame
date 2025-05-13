@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:math';
 
 import 'package:flame/components.dart' hide Plane;
 import 'package:flutter/services.dart';
@@ -28,6 +29,12 @@ class Level extends World
   int _lastFiredTimestamp = 0;
 
   DateTime _lastAsteroidSpawnedTime = DateTime(2000);
+
+  int _lastMojaherSpawnedTimestamp = 0;
+  static const int mojaherMinIntervalMs = 3000;
+  static const int mojaherMaxIntervalMs = 8000;
+  int _nextMojaherIntervalMs = 5000;
+  final Random _random = Random();
 
   final asteroidsPool = ActorsPool<AsteroidActor>();
   final mojahersPool = ActorsPool<MojaherActor>();
@@ -60,6 +67,8 @@ class Level extends World
     addAll(cannonsPool.pool);
     addAll(asteroidsPool.pool);
     addAll(mojahersPool.pool);
+
+    _scheduleNextMojaherSpawn();
 
     // Set game as started and set start time
     FlyGame.ref.read(gameStatsProvider.notifier).setGameStarted(true);
@@ -119,12 +128,19 @@ class Level extends World
     return super.onLoad();
   }
 
+  void _scheduleNextMojaherSpawn() {
+    _nextMojaherIntervalMs =
+        mojaherMinIntervalMs +
+        _random.nextInt(mojaherMaxIntervalMs - mojaherMinIntervalMs);
+  }
+
   @override
   void update(double dt) {
     if (game.isPaused) return;
     final gameStats = FlyGame.ref.read(gameStatsProvider);
     if (!gameStats.isGameOver) {
       _spawnEnemy();
+      _spawnMojaher();
       if (game.plane.firing) {
         _spawnCannon();
       }
@@ -187,6 +203,24 @@ class Level extends World
       final asteroid = asteroidsPool.fromPool();
       if (asteroid != null) {
         asteroid.isVisible = true;
+      }
+    }
+  }
+
+  void _spawnMojaher() {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    if (now - _lastMojaherSpawnedTimestamp < _nextMojaherIntervalMs) {
+      return;
+    }
+
+    int activeMojahers = mojahersPool.activeCount;
+    if (activeMojahers < Config.maxMojaherCount && mojahersPool.poolSize > 0) {
+      _lastMojaherSpawnedTimestamp = now;
+      _scheduleNextMojaherSpawn();
+      final mojaher = mojahersPool.fromPool();
+      if (mojaher != null) {
+        mojaher.position = mojaher.startPosition();
+        mojaher.isVisible = true;
       }
     }
   }

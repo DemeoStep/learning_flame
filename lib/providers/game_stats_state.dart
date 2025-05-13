@@ -12,6 +12,7 @@ abstract class GameStatsState with _$GameStatsState {
     @Default(Config.minClipSize) int clipSize,
     @Default(Config.startLives) int lives,
     @Default(0) int asteroidCount,
+    @Default(0) int mojaherCount,
     @Default(Config.minAsteroidSpeed) int asteroidSpeed,
     @Default(Config.minCannonSpeed) int cannonSpeed,
     @Default(Config.maxCannonReloadTime) int cannonReloadTime,

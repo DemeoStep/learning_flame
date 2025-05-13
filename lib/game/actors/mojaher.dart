@@ -24,7 +24,7 @@ class MojaherActor extends PositionComponent
 
   late RectangleHitbox hitBox;
 
-  //late SMIBool isDestroyed;
+  late SMIBool isDestroyed;
 
   bool isVisible = false;
 
@@ -36,18 +36,18 @@ class MojaherActor extends PositionComponent
 
   @override
   Future<void> onLoad() async {
-    position = _startPosition();
+    position = startPosition();
 
     final mojaher = await riveComponentService.loadRiveComponent(this);
 
-    // final controller = StateMachineController.fromArtboard(
-    //   mojaher.artboard,
-    //   stateMachineName,
-    // );
+    final controller = StateMachineController.fromArtboard(
+      mojaher.artboard,
+      stateMachineName,
+    );
 
-    // isDestroyed = controller!.findSMI<SMIBool>('isDestroyed')!;
+    isDestroyed = controller!.findSMI<SMIBool>('isDestroyed')!;
 
-    // mojaher.artboard.addController(controller);
+    mojaher.artboard.addController(controller);
 
     hitBox = RectangleHitbox(size: mojaher.size);
 
@@ -64,10 +64,10 @@ class MojaherActor extends PositionComponent
     }
 
     if (position.y > Consts.windowSize.height + Consts.asteroidSize.y) {
-      //if (!isDestroyed.value) {
+      if (!isDestroyed.value) {
         FlyGame.ref.read(gameStatsProvider.notifier).decreaseScore();
-      //}
-      position = _startPosition();
+      }
+      position = startPosition();
     } else {
       final speed = FlyGame.ref.read(gameStatsProvider).asteroidSpeed;
       position.add(Vector2(0, speed * dt));
@@ -76,22 +76,22 @@ class MojaherActor extends PositionComponent
   }
 
   void destroyMojaher() {
-    // if (isDestroyed.value) return;
+    if (isDestroyed.value) return;
 
-    // isDestroyed.value = true;
+    isDestroyed.value = true;
 
     hitBox.collisionType = CollisionType.inactive;
 
     audioService.playExplosion();
 
-    Future.delayed(Duration(milliseconds: 400), _resetAsteroid);
+    Future.delayed(Duration(milliseconds: 400), _resetMojaher);
   }
 
-  void _resetAsteroid() {
+  void _resetMojaher() {
     mojahersPool.toPool(this);
-    position = _startPosition();
+    position = startPosition();
     hitBox.collisionType = CollisionType.active;
-    //isDestroyed.value = false;
+    isDestroyed.value = false;
     isVisible = false;
   }
 
@@ -113,6 +113,6 @@ class MojaherActor extends PositionComponent
     }
   }
 
-  Vector2 _startPosition() =>
+  Vector2 startPosition() =>
       Vector2(35 + _random.nextInt(500).toDouble(), -100);
 }
