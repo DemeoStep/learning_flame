@@ -1,0 +1,118 @@
+import 'dart:math';
+
+import 'package:flame/collisions.dart';
+import 'package:flame/components.dart' hide Plane;
+import 'package:flame_rive/flame_rive.dart';
+import 'package:learning_flame/game/actors/actor.dart';
+import 'package:learning_flame/game/actors/cannon.dart';
+import 'package:learning_flame/game/actors/plane.dart';
+import 'package:learning_flame/consts.dart';
+import 'package:learning_flame/core/di.dart';
+import 'package:learning_flame/game/fly_game.dart';
+import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
+import 'package:learning_flame/providers/game_stats_provider.dart';
+
+class MojaherActor extends PositionComponent
+    with HasGameReference<FlyGame>, CollisionCallbacks
+    implements Actor {
+  @override
+  final String artBoardName = Consts.mojaherArtBoardName;
+  @override
+  final String stateMachineName = Consts.mojaherStateMachineName;
+  @override
+  final Vector2 actorSize = Consts.mojaherSize;
+
+  late RectangleHitbox hitBox;
+
+  //late SMIBool isDestroyed;
+
+  bool isVisible = false;
+
+  static final Random _random = Random();
+
+  final ActorsPool<MojaherActor> mojahersPool;
+
+  MojaherActor({required this.mojahersPool});
+
+  @override
+  Future<void> onLoad() async {
+    position = _startPosition();
+
+    final mojaher = await riveComponentService.loadRiveComponent(this);
+
+    // final controller = StateMachineController.fromArtboard(
+    //   mojaher.artboard,
+    //   stateMachineName,
+    // );
+
+    // isDestroyed = controller!.findSMI<SMIBool>('isDestroyed')!;
+
+    // mojaher.artboard.addController(controller);
+
+    hitBox = RectangleHitbox(size: mojaher.size);
+
+    add(mojaher);
+    add(hitBox);
+
+    await super.onLoad();
+  }
+
+  @override
+  update(double dt) {
+    if (!isVisible) {
+      return;
+    }
+
+    if (position.y > Consts.windowSize.height + Consts.asteroidSize.y) {
+      //if (!isDestroyed.value) {
+        FlyGame.ref.read(gameStatsProvider.notifier).decreaseScore();
+      //}
+      position = _startPosition();
+    } else {
+      final speed = FlyGame.ref.read(gameStatsProvider).asteroidSpeed;
+      position.add(Vector2(0, speed * dt));
+    }
+    super.update(dt);
+  }
+
+  void destroyMojaher() {
+    // if (isDestroyed.value) return;
+
+    // isDestroyed.value = true;
+
+    hitBox.collisionType = CollisionType.inactive;
+
+    audioService.playExplosion();
+
+    Future.delayed(Duration(milliseconds: 400), _resetAsteroid);
+  }
+
+  void _resetAsteroid() {
+    mojahersPool.toPool(this);
+    position = _startPosition();
+    hitBox.collisionType = CollisionType.active;
+    //isDestroyed.value = false;
+    isVisible = false;
+  }
+
+  @override
+  void onCollisionStart(
+    Set<Vector2> intersectionPoints,
+    PositionComponent other,
+  ) {
+    super.onCollisionStart(intersectionPoints, other);
+
+    if (other is CannonActor) {
+      destroyMojaher();
+      other.destroy();
+      FlyGame.ref.read(gameStatsProvider.notifier).increaseScore();
+    } else if (other is PlaneActor) {
+      destroyMojaher();
+      other.hitTrigger.fire();
+      FlyGame.ref.read(gameStatsProvider.notifier).decreaseLive();
+    }
+  }
+
+  Vector2 _startPosition() =>
+      Vector2(35 + _random.nextInt(500).toDouble(), -100);
+}

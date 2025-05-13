@@ -15,4 +15,9 @@ class Config {
   static const int maxAsteroidSpeed = 500;
 
   static const int maxAsteroidCount = 5;
+
+  static const int minMojaherSpeed = 200;
+  static const int maxMojaherSpeed = 700;
+
+  static const int maxMojaherCount = 3;
 }

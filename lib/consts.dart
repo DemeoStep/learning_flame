@@ -10,16 +10,19 @@ class Consts {
   static const String planeArtBoardName = 'Plane';
   static const String cannonArtBoardName = 'Cannon';
   static const String asteroidArtBoardName = 'Asteroid';
+  static const String mojaherArtBoardName = 'Mojaher';
 
   static const String spaceStateMachineName = 'SpaceSM';
   static const String planeStateMachineName = 'FlySM';
   static const String cannonStateMachineName = 'CannonSM';
   static const String asteroidStateMachineName = 'AsteroidSM';
+  static const String mojaherStateMachineName = 'MojaherSM';
 
   static Vector2 spaceSize = Vector2(600, 600);
   static Vector2 planeSize = Vector2(60, 100);
   static Vector2 cannonSize = Vector2(5, 10);
   static Vector2 asteroidSize = Vector2(30, 30);
+  static Vector2 mojaherSize = Vector2(34, 16);
 
   // Pause key
   static const pauseKey = LogicalKeyboardKey.keyP;

@@ -1,4 +1,5 @@
 import 'package:learning_flame/core/di.dart';
+import 'package:learning_flame/game/levels/level.dart';
 import 'package:rive/rive.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +72,6 @@ class _ScoreOverlayState extends ConsumerState<ScoreOverlay> {
   Widget build(BuildContext context) {
     final state = ref.watch(gameStatsProvider);
 
-    // Handle level and game over messages
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (state.isGameOver) {
         levelValue?.text = 'Game Over';
@@ -130,19 +130,32 @@ class _ScoreOverlayState extends ConsumerState<ScoreOverlay> {
                   ],
                 ),
                 const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
-                      spacing: 5,
-                      children: List.generate(
-                        state.clipSize,
+              ],
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              child: ValueListenableBuilder(
+                valueListenable:
+                    (widget.game.world as Level)
+                        .cannonsPool
+                        .activeCountNotifier,
+                builder: (context, value, child) {
+                  return Row(
+                    spacing: 5,
+                    children: [
+                      ...List.generate(
+                        state.clipSize - value,
                         (index) => cannonSvg,
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      ...List.generate(
+                        value,
+                        (index) => Opacity(opacity: 0.5, child: cannonSvg),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
             Positioned.fill(child: messageAnimation),
           ],

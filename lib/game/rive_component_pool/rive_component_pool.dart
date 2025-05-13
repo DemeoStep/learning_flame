@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:learning_flame/game/actors/actor.dart';
 
 class ActorsPool<T extends Actor> {
@@ -14,6 +15,8 @@ class ActorsPool<T extends Actor> {
 
   T? get lastActive => _active.lastOrNull;
 
+  ValueNotifier<int> activeCountNotifier = ValueNotifier(0);
+
   void add(T component) {
     _pool.add(component);
   }
@@ -26,6 +29,7 @@ class ActorsPool<T extends Actor> {
     final item = _pool.first;
     _pool.remove(item);
     _active.add(item);
+    activeCountNotifier.value = _active.length;
     return item;
   }
 
@@ -38,5 +42,6 @@ class ActorsPool<T extends Actor> {
       // If not already active, just add to pool
       _pool.add(item);
     }
+    activeCountNotifier.value = _active.length;
   }
 }

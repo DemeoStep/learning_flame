@@ -8,6 +8,7 @@ import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/game/actors/asteroid.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/game/actors/cannon.dart';
+import 'package:learning_flame/game/actors/mojaher.dart';
 import 'package:learning_flame/game/actors/plane.dart';
 import 'package:learning_flame/game/config.dart';
 import 'package:learning_flame/game/fly_game.dart';
@@ -29,6 +30,7 @@ class Level extends World
   DateTime _lastAsteroidSpawnedTime = DateTime(2000);
 
   final asteroidsPool = ActorsPool<AsteroidActor>();
+  final mojahersPool = ActorsPool<MojaherActor>();
   final cannonsPool = ActorsPool<CannonActor>();
 
   @override
@@ -50,8 +52,14 @@ class Level extends World
       asteroidsPool.add(asteroid);
     }
 
+    for (var i = 0; i < Config.maxMojaherCount; i++) {
+      final mojaher = MojaherActor(mojahersPool: mojahersPool);
+      mojahersPool.add(mojaher);
+    }
+
     addAll(cannonsPool.pool);
     addAll(asteroidsPool.pool);
+    addAll(mojahersPool.pool);
 
     // Set game as started and set start time
     FlyGame.ref.read(gameStatsProvider.notifier).setGameStarted(true);
@@ -116,7 +124,7 @@ class Level extends World
     if (game.isPaused) return;
     final gameStats = FlyGame.ref.read(gameStatsProvider);
     if (!gameStats.isGameOver) {
-      _spawnAsteroid();
+      _spawnEnemy();
       if (game.plane.firing) {
         _spawnCannon();
       }
@@ -146,7 +154,7 @@ class Level extends World
     }
   }
 
-  void _spawnAsteroid() {
+  void _spawnEnemy() {
     final now = DateTime.now();
     final gameStats = FlyGame.ref.read(gameStatsProvider);
     final timeSinceLastSpawn =
