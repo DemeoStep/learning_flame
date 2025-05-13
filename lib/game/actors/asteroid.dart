@@ -81,13 +81,12 @@ class AsteroidActor extends PositionComponent
 
   void destroyAsteroid() {
     if (isDestroyed.value) return;
-    isVisible = false;
 
     isDestroyed.value = true;
 
     hitBox.collisionType = CollisionType.inactive;
 
-    player.play(AssetSource(Consts.explosion));
+    audioService.playExplosion();
 
     Future.delayed(Duration(milliseconds: 400), _resetAsteroid);
   }
@@ -97,6 +96,7 @@ class AsteroidActor extends PositionComponent
     position = _startPosition();
     hitBox.collisionType = CollisionType.active;
     isDestroyed.value = false;
+    isVisible = false;
   }
 
   @override

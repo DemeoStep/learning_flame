@@ -69,7 +69,7 @@ class CannonActor extends PositionComponent
 
     hitBox.collisionType = CollisionType.active;
 
-    player.play(AssetSource(Consts.gunFire));
+    audioService.playCannonFire();
   }
 
   void destroy() {
