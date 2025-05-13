@@ -44,6 +44,7 @@ dependencies:
   rive: ^0.13.20
   get_it: ^8.0.3
   audioplayers: ^6.4.0
+  flutter_riverpod: ^2.6.1
 
 dev_dependencies:
 #  flutter_test:

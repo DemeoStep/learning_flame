@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:learning_flame/consts.dart';
-import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/levels/level.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -19,7 +18,6 @@ class FlyGame extends FlameGame
 
   @override
   Future<void> onLoad() async {
-    await audioService.init();
     world = Level();
     plane = PlaneActor();
 
