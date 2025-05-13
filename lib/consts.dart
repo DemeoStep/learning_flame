@@ -1,4 +1,5 @@
 import 'package:flame/extensions.dart';
+import 'package:flutter/services.dart';
 
 class Consts {
   static const Size windowSize = Size(600, 600);
@@ -20,8 +21,11 @@ class Consts {
   static Vector2 cannonSize = Vector2(5, 10);
   static Vector2 asteroidSize = Vector2(30, 30);
 
+  // Pause key
+  static const pauseKey = LogicalKeyboardKey.keyP;
+
   //Sounds
-  static const String _audioPathPrefix = 'audio';
+  static const String _audioPathPrefix = '';
   static const String gunFire = '$_audioPathPrefix/gun_fire.mp3';
   static const String explosion = '$_audioPathPrefix/explosion.mp3';
   static const List<String> sounds = [gunFire, explosion];

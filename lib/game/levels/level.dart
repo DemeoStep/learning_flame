@@ -106,6 +106,7 @@ class Level extends World
 
   @override
   void update(double dt) {
+    if (game.isPaused) return;
     if (!gameStatsCubit.state.isGameOver) {
       _spawnAsteroid();
       if (game.plane.firing) {

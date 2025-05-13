@@ -1,4 +1,3 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_rive/flame_rive.dart';
@@ -26,8 +25,6 @@ class CannonActor extends PositionComponent
 
   bool isVisible = false;
 
-  final player = AudioPlayer();
-
   final ActorsPool<CannonActor> cannonsPool;
 
   CannonActor({required this.cannonsPool});
@@ -40,9 +37,6 @@ class CannonActor extends PositionComponent
 
     add(cannon);
     add(hitBox);
-
-    await player.setReleaseMode(ReleaseMode.stop);
-    await player.setVolume(0.1);
 
     super.onLoad();
   }
@@ -62,7 +56,7 @@ class CannonActor extends PositionComponent
     super.update(dt);
   }
 
-  void fire() async {
+  void fire() {
     isVisible = true;
     position = _startingPosition;
     size = cannon.size;

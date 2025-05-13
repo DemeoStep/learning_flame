@@ -43,7 +43,7 @@ void main() async {
 
   runApp(
     MaterialApp(
-      showPerformanceOverlay: true,
+      showPerformanceOverlay: kDebugMode,
       home: BlocProvider(
         create: (context) => gameStatsCubit,
         lazy: false,

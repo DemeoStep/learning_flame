@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart' hide Plane;
 import 'package:flame_rive/flame_rive.dart';
@@ -32,16 +31,11 @@ class AsteroidActor extends PositionComponent
 
   final ActorsPool<AsteroidActor> asteroidsPool;
 
-  final player = AudioPlayer();
-
   AsteroidActor({required this.asteroidsPool});
 
   @override
   Future<void> onLoad() async {
     position = _startPosition();
-
-    await player.setReleaseMode(ReleaseMode.stop);
-    await player.setVolume(0.1);
 
     final asteroid = await riveComponentService.loadRiveComponent(this);
 

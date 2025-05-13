@@ -1,8 +1,11 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:learning_flame/consts.dart';
+import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/levels/level.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -10,11 +13,13 @@ import 'package:learning_flame/game/actors/plane.dart';
 
 class FlyGame extends FlameGame
     with HasKeyboardHandlerComponents, WindowListener, HasCollisionDetection {
-
   late final PlaneActor plane;
+
+  bool isPaused = false;
 
   @override
   Future<void> onLoad() async {
+    await audioService.init();
     world = Level();
     plane = PlaneActor();
 
@@ -36,5 +41,23 @@ class FlyGame extends FlameGame
   void onWindowResized() {
     windowManager.setAspectRatio(1.0);
     super.onWindowResize();
+  }
+
+  @override
+  void update(double dt) {
+    if (isPaused) return;
+    super.update(dt);
+  }
+
+  @override
+  KeyEventResult onKeyEvent(
+    KeyEvent event,
+    Set<LogicalKeyboardKey> keysPressed,
+  ) {
+    if (event is KeyDownEvent && event.logicalKey == Consts.pauseKey) {
+      isPaused = !isPaused;
+      return KeyEventResult.handled;
+    }
+    return super.onKeyEvent(event, keysPressed);
   }
 }
