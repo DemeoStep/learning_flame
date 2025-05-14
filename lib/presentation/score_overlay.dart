@@ -52,6 +52,29 @@ class _ScoreOverlayState extends ConsumerState<ScoreOverlay> {
       stateMachines: ['MessageSM'],
       onInit: _onInit,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = ref.read(gameStatsProvider);
+
+      widget.game.isGameOver.addListener(() {
+        final isGameOver = widget.game.isGameOver.value;
+        if (isGameOver) {
+          levelValue?.text = 'Game Over';
+          _messageShowTrigger?.fire();
+        }
+      });
+
+      if (state.asteroidCount > level) {
+        if (levelValue != null) {
+          level = state.asteroidCount;
+          levelValue?.text = 'Level $level';
+          _messageShowTrigger?.fire();
+          Future.delayed(const Duration(seconds: 2), () {
+            _messageHideTrigger?.fire();
+          });
+        }
+      }
+    });
   }
 
   void _onInit(Artboard artboard) {
@@ -72,23 +95,6 @@ class _ScoreOverlayState extends ConsumerState<ScoreOverlay> {
   Widget build(BuildContext context) {
     final state = ref.watch(gameStatsProvider);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (state.isGameOver) {
-        levelValue?.text = 'Game Over';
-        _messageShowTrigger?.fire();
-      }
-      if (state.asteroidCount > level) {
-        if (levelValue != null) {
-          level = state.asteroidCount;
-          levelValue?.text = 'Level $level';
-          _messageShowTrigger?.fire();
-          Future.delayed(const Duration(seconds: 2), () {
-            _messageHideTrigger?.fire();
-          });
-        }
-      }
-    });
-
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(10),
@@ -104,9 +110,14 @@ class _ScoreOverlayState extends ConsumerState<ScoreOverlay> {
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                     const Gap(5),
-                    Text(
-                      state.score.toString(),
-                      style: const TextStyle(fontSize: 20, color: Colors.white),
+                    ValueListenableBuilder(
+                      valueListenable: widget.game.score,
+                      builder: (context, value, _) {
+                        return Text(
+                          value.toString(),
+                          style: const TextStyle(fontSize: 20, color: Colors.white),
+                        );
+                      }
                     ),
                     const Gap(20),
                     const Text(
@@ -124,8 +135,16 @@ class _ScoreOverlayState extends ConsumerState<ScoreOverlay> {
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                     const Gap(5),
-                    Row(
-                      children: List.generate(state.lives, (index) => planeSvg),
+                    ValueListenableBuilder<int>(
+                      valueListenable: widget.game.lives,
+                      builder: (context, value, _) {
+                        if (value <= 0) {
+                          return SizedBox();
+                        }
+                        return Row(
+                          children: List.generate(value, (index) => planeSvg),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -140,7 +159,7 @@ class _ScoreOverlayState extends ConsumerState<ScoreOverlay> {
                     (widget.game.world as Level)
                         .cannonsPool
                         .activeCountNotifier,
-                builder: (context, value, child) {
+                builder: (context, value, _) {
                   return Row(
                     spacing: 5,
                     children: [

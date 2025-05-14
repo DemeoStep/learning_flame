@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GameStatsState {
 
- bool get isGameOver; bool get isGameStarted; int get score; int get clipSize; int get lives; int get asteroidCount; int get mojaherCount; int get asteroidSpeed; int get mojaherSpeed; int get cannonSpeed; int get cannonReloadTime; int get planeSpeed; DateTime get gameStartTime;
+ bool get isGameStarted; int get clipSize; int get lives; int get asteroidCount; int get mojaherCount; int get asteroidSpeed; int get mojaherSpeed; int get cannonSpeed; int get cannonReloadTime; int get planeSpeed; DateTime get gameStartTime;
 /// Create a copy of GameStatsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $GameStatsStateCopyWith<GameStatsState> get copyWith => _$GameStatsStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameStatsState&&(identical(other.isGameOver, isGameOver) || other.isGameOver == isGameOver)&&(identical(other.isGameStarted, isGameStarted) || other.isGameStarted == isGameStarted)&&(identical(other.score, score) || other.score == score)&&(identical(other.clipSize, clipSize) || other.clipSize == clipSize)&&(identical(other.lives, lives) || other.lives == lives)&&(identical(other.asteroidCount, asteroidCount) || other.asteroidCount == asteroidCount)&&(identical(other.mojaherCount, mojaherCount) || other.mojaherCount == mojaherCount)&&(identical(other.asteroidSpeed, asteroidSpeed) || other.asteroidSpeed == asteroidSpeed)&&(identical(other.mojaherSpeed, mojaherSpeed) || other.mojaherSpeed == mojaherSpeed)&&(identical(other.cannonSpeed, cannonSpeed) || other.cannonSpeed == cannonSpeed)&&(identical(other.cannonReloadTime, cannonReloadTime) || other.cannonReloadTime == cannonReloadTime)&&(identical(other.planeSpeed, planeSpeed) || other.planeSpeed == planeSpeed)&&(identical(other.gameStartTime, gameStartTime) || other.gameStartTime == gameStartTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameStatsState&&(identical(other.isGameStarted, isGameStarted) || other.isGameStarted == isGameStarted)&&(identical(other.clipSize, clipSize) || other.clipSize == clipSize)&&(identical(other.lives, lives) || other.lives == lives)&&(identical(other.asteroidCount, asteroidCount) || other.asteroidCount == asteroidCount)&&(identical(other.mojaherCount, mojaherCount) || other.mojaherCount == mojaherCount)&&(identical(other.asteroidSpeed, asteroidSpeed) || other.asteroidSpeed == asteroidSpeed)&&(identical(other.mojaherSpeed, mojaherSpeed) || other.mojaherSpeed == mojaherSpeed)&&(identical(other.cannonSpeed, cannonSpeed) || other.cannonSpeed == cannonSpeed)&&(identical(other.cannonReloadTime, cannonReloadTime) || other.cannonReloadTime == cannonReloadTime)&&(identical(other.planeSpeed, planeSpeed) || other.planeSpeed == planeSpeed)&&(identical(other.gameStartTime, gameStartTime) || other.gameStartTime == gameStartTime));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isGameOver,isGameStarted,score,clipSize,lives,asteroidCount,mojaherCount,asteroidSpeed,mojaherSpeed,cannonSpeed,cannonReloadTime,planeSpeed,gameStartTime);
+int get hashCode => Object.hash(runtimeType,isGameStarted,clipSize,lives,asteroidCount,mojaherCount,asteroidSpeed,mojaherSpeed,cannonSpeed,cannonReloadTime,planeSpeed,gameStartTime);
 
 @override
 String toString() {
-  return 'GameStatsState(isGameOver: $isGameOver, isGameStarted: $isGameStarted, score: $score, clipSize: $clipSize, lives: $lives, asteroidCount: $asteroidCount, mojaherCount: $mojaherCount, asteroidSpeed: $asteroidSpeed, mojaherSpeed: $mojaherSpeed, cannonSpeed: $cannonSpeed, cannonReloadTime: $cannonReloadTime, planeSpeed: $planeSpeed, gameStartTime: $gameStartTime)';
+  return 'GameStatsState(isGameStarted: $isGameStarted, clipSize: $clipSize, lives: $lives, asteroidCount: $asteroidCount, mojaherCount: $mojaherCount, asteroidSpeed: $asteroidSpeed, mojaherSpeed: $mojaherSpeed, cannonSpeed: $cannonSpeed, cannonReloadTime: $cannonReloadTime, planeSpeed: $planeSpeed, gameStartTime: $gameStartTime)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $GameStatsStateCopyWith<$Res>  {
   factory $GameStatsStateCopyWith(GameStatsState value, $Res Function(GameStatsState) _then) = _$GameStatsStateCopyWithImpl;
 @useResult
 $Res call({
- bool isGameOver, bool isGameStarted, int score, int clipSize, int lives, int asteroidCount, int mojaherCount, int asteroidSpeed, int mojaherSpeed, int cannonSpeed, int cannonReloadTime, int planeSpeed, DateTime gameStartTime
+ bool isGameStarted, int clipSize, int lives, int asteroidCount, int mojaherCount, int asteroidSpeed, int mojaherSpeed, int cannonSpeed, int cannonReloadTime, int planeSpeed, DateTime gameStartTime
 });
 
 
@@ -63,12 +63,10 @@ class _$GameStatsStateCopyWithImpl<$Res>
 
 /// Create a copy of GameStatsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isGameOver = null,Object? isGameStarted = null,Object? score = null,Object? clipSize = null,Object? lives = null,Object? asteroidCount = null,Object? mojaherCount = null,Object? asteroidSpeed = null,Object? mojaherSpeed = null,Object? cannonSpeed = null,Object? cannonReloadTime = null,Object? planeSpeed = null,Object? gameStartTime = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isGameStarted = null,Object? clipSize = null,Object? lives = null,Object? asteroidCount = null,Object? mojaherCount = null,Object? asteroidSpeed = null,Object? mojaherSpeed = null,Object? cannonSpeed = null,Object? cannonReloadTime = null,Object? planeSpeed = null,Object? gameStartTime = null,}) {
   return _then(_self.copyWith(
-isGameOver: null == isGameOver ? _self.isGameOver : isGameOver // ignore: cast_nullable_to_non_nullable
-as bool,isGameStarted: null == isGameStarted ? _self.isGameStarted : isGameStarted // ignore: cast_nullable_to_non_nullable
-as bool,score: null == score ? _self.score : score // ignore: cast_nullable_to_non_nullable
-as int,clipSize: null == clipSize ? _self.clipSize : clipSize // ignore: cast_nullable_to_non_nullable
+isGameStarted: null == isGameStarted ? _self.isGameStarted : isGameStarted // ignore: cast_nullable_to_non_nullable
+as bool,clipSize: null == clipSize ? _self.clipSize : clipSize // ignore: cast_nullable_to_non_nullable
 as int,lives: null == lives ? _self.lives : lives // ignore: cast_nullable_to_non_nullable
 as int,asteroidCount: null == asteroidCount ? _self.asteroidCount : asteroidCount // ignore: cast_nullable_to_non_nullable
 as int,mojaherCount: null == mojaherCount ? _self.mojaherCount : mojaherCount // ignore: cast_nullable_to_non_nullable
@@ -89,12 +87,10 @@ as DateTime,
 
 
 class _GameStatsState implements GameStatsState {
-   _GameStatsState({this.isGameOver = false, this.isGameStarted = false, this.score = 0, this.clipSize = Config.minClipSize, this.lives = Config.startLives, this.asteroidCount = 0, this.mojaherCount = 0, this.asteroidSpeed = Config.minAsteroidSpeed, this.mojaherSpeed = Config.minMojaherSpeed, this.cannonSpeed = Config.minCannonSpeed, this.cannonReloadTime = Config.maxCannonReloadTime, this.planeSpeed = Config.minPlaneSpeed, required this.gameStartTime});
+   _GameStatsState({this.isGameStarted = false, this.clipSize = Config.minClipSize, this.lives = Config.startLives, this.asteroidCount = 0, this.mojaherCount = 0, this.asteroidSpeed = Config.minAsteroidSpeed, this.mojaherSpeed = Config.minMojaherSpeed, this.cannonSpeed = Config.minCannonSpeed, this.cannonReloadTime = Config.maxCannonReloadTime, this.planeSpeed = Config.minPlaneSpeed, required this.gameStartTime});
   
 
-@override@JsonKey() final  bool isGameOver;
 @override@JsonKey() final  bool isGameStarted;
-@override@JsonKey() final  int score;
 @override@JsonKey() final  int clipSize;
 @override@JsonKey() final  int lives;
 @override@JsonKey() final  int asteroidCount;
@@ -116,16 +112,16 @@ _$GameStatsStateCopyWith<_GameStatsState> get copyWith => __$GameStatsStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameStatsState&&(identical(other.isGameOver, isGameOver) || other.isGameOver == isGameOver)&&(identical(other.isGameStarted, isGameStarted) || other.isGameStarted == isGameStarted)&&(identical(other.score, score) || other.score == score)&&(identical(other.clipSize, clipSize) || other.clipSize == clipSize)&&(identical(other.lives, lives) || other.lives == lives)&&(identical(other.asteroidCount, asteroidCount) || other.asteroidCount == asteroidCount)&&(identical(other.mojaherCount, mojaherCount) || other.mojaherCount == mojaherCount)&&(identical(other.asteroidSpeed, asteroidSpeed) || other.asteroidSpeed == asteroidSpeed)&&(identical(other.mojaherSpeed, mojaherSpeed) || other.mojaherSpeed == mojaherSpeed)&&(identical(other.cannonSpeed, cannonSpeed) || other.cannonSpeed == cannonSpeed)&&(identical(other.cannonReloadTime, cannonReloadTime) || other.cannonReloadTime == cannonReloadTime)&&(identical(other.planeSpeed, planeSpeed) || other.planeSpeed == planeSpeed)&&(identical(other.gameStartTime, gameStartTime) || other.gameStartTime == gameStartTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameStatsState&&(identical(other.isGameStarted, isGameStarted) || other.isGameStarted == isGameStarted)&&(identical(other.clipSize, clipSize) || other.clipSize == clipSize)&&(identical(other.lives, lives) || other.lives == lives)&&(identical(other.asteroidCount, asteroidCount) || other.asteroidCount == asteroidCount)&&(identical(other.mojaherCount, mojaherCount) || other.mojaherCount == mojaherCount)&&(identical(other.asteroidSpeed, asteroidSpeed) || other.asteroidSpeed == asteroidSpeed)&&(identical(other.mojaherSpeed, mojaherSpeed) || other.mojaherSpeed == mojaherSpeed)&&(identical(other.cannonSpeed, cannonSpeed) || other.cannonSpeed == cannonSpeed)&&(identical(other.cannonReloadTime, cannonReloadTime) || other.cannonReloadTime == cannonReloadTime)&&(identical(other.planeSpeed, planeSpeed) || other.planeSpeed == planeSpeed)&&(identical(other.gameStartTime, gameStartTime) || other.gameStartTime == gameStartTime));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isGameOver,isGameStarted,score,clipSize,lives,asteroidCount,mojaherCount,asteroidSpeed,mojaherSpeed,cannonSpeed,cannonReloadTime,planeSpeed,gameStartTime);
+int get hashCode => Object.hash(runtimeType,isGameStarted,clipSize,lives,asteroidCount,mojaherCount,asteroidSpeed,mojaherSpeed,cannonSpeed,cannonReloadTime,planeSpeed,gameStartTime);
 
 @override
 String toString() {
-  return 'GameStatsState(isGameOver: $isGameOver, isGameStarted: $isGameStarted, score: $score, clipSize: $clipSize, lives: $lives, asteroidCount: $asteroidCount, mojaherCount: $mojaherCount, asteroidSpeed: $asteroidSpeed, mojaherSpeed: $mojaherSpeed, cannonSpeed: $cannonSpeed, cannonReloadTime: $cannonReloadTime, planeSpeed: $planeSpeed, gameStartTime: $gameStartTime)';
+  return 'GameStatsState(isGameStarted: $isGameStarted, clipSize: $clipSize, lives: $lives, asteroidCount: $asteroidCount, mojaherCount: $mojaherCount, asteroidSpeed: $asteroidSpeed, mojaherSpeed: $mojaherSpeed, cannonSpeed: $cannonSpeed, cannonReloadTime: $cannonReloadTime, planeSpeed: $planeSpeed, gameStartTime: $gameStartTime)';
 }
 
 
@@ -136,7 +132,7 @@ abstract mixin class _$GameStatsStateCopyWith<$Res> implements $GameStatsStateCo
   factory _$GameStatsStateCopyWith(_GameStatsState value, $Res Function(_GameStatsState) _then) = __$GameStatsStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isGameOver, bool isGameStarted, int score, int clipSize, int lives, int asteroidCount, int mojaherCount, int asteroidSpeed, int mojaherSpeed, int cannonSpeed, int cannonReloadTime, int planeSpeed, DateTime gameStartTime
+ bool isGameStarted, int clipSize, int lives, int asteroidCount, int mojaherCount, int asteroidSpeed, int mojaherSpeed, int cannonSpeed, int cannonReloadTime, int planeSpeed, DateTime gameStartTime
 });
 
 
@@ -153,12 +149,10 @@ class __$GameStatsStateCopyWithImpl<$Res>
 
 /// Create a copy of GameStatsState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isGameOver = null,Object? isGameStarted = null,Object? score = null,Object? clipSize = null,Object? lives = null,Object? asteroidCount = null,Object? mojaherCount = null,Object? asteroidSpeed = null,Object? mojaherSpeed = null,Object? cannonSpeed = null,Object? cannonReloadTime = null,Object? planeSpeed = null,Object? gameStartTime = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isGameStarted = null,Object? clipSize = null,Object? lives = null,Object? asteroidCount = null,Object? mojaherCount = null,Object? asteroidSpeed = null,Object? mojaherSpeed = null,Object? cannonSpeed = null,Object? cannonReloadTime = null,Object? planeSpeed = null,Object? gameStartTime = null,}) {
   return _then(_GameStatsState(
-isGameOver: null == isGameOver ? _self.isGameOver : isGameOver // ignore: cast_nullable_to_non_nullable
-as bool,isGameStarted: null == isGameStarted ? _self.isGameStarted : isGameStarted // ignore: cast_nullable_to_non_nullable
-as bool,score: null == score ? _self.score : score // ignore: cast_nullable_to_non_nullable
-as int,clipSize: null == clipSize ? _self.clipSize : clipSize // ignore: cast_nullable_to_non_nullable
+isGameStarted: null == isGameStarted ? _self.isGameStarted : isGameStarted // ignore: cast_nullable_to_non_nullable
+as bool,clipSize: null == clipSize ? _self.clipSize : clipSize // ignore: cast_nullable_to_non_nullable
 as int,lives: null == lives ? _self.lives : lives // ignore: cast_nullable_to_non_nullable
 as int,asteroidCount: null == asteroidCount ? _self.asteroidCount : asteroidCount // ignore: cast_nullable_to_non_nullable
 as int,mojaherCount: null == mojaherCount ? _self.mojaherCount : mojaherCount // ignore: cast_nullable_to_non_nullable

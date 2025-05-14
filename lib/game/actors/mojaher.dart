@@ -28,8 +28,6 @@ class MojaherActor extends PositionComponent
 
   bool isVisible = false;
 
-  static final Random _random = Random();
-
   final ActorsPool<MojaherActor> mojahersPool;
 
   MojaherActor({required this.mojahersPool});
@@ -63,10 +61,7 @@ class MojaherActor extends PositionComponent
       return;
     }
 
-    if (position.y > Consts.windowSize.height + Consts.mojaherSize.y) {
-      if (!isDestroyed.value) {
-        FlyGame.ref.read(gameStatsProvider.notifier).decreaseScore();
-      }
+    if (position.y > Consts.windowSize.height + actorSize.y) {
       position = startPosition();
     } else {
       final speed = FlyGame.ref.read(gameStatsProvider).mojaherSpeed;
@@ -105,14 +100,14 @@ class MojaherActor extends PositionComponent
     if (other is CannonActor) {
       destroyMojaher();
       other.destroy();
-      FlyGame.ref.read(gameStatsProvider.notifier).increaseScore();
+      game.increaseScore(amount: 2);
     } else if (other is PlaneActor) {
       destroyMojaher();
       other.hitTrigger.fire();
-      FlyGame.ref.read(gameStatsProvider.notifier).decreaseLive();
+      game.minusLife();
     }
   }
 
   Vector2 startPosition() =>
-      Vector2(35 + _random.nextInt(500).toDouble(), -100);
+      Vector2(35 + Random().nextInt(500).toDouble(), -100);
 }

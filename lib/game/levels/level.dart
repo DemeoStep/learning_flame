@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flame/components.dart' hide Plane;
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/game/actors/asteroid.dart';
@@ -39,7 +40,7 @@ class Level extends World
   final asteroidsPool = ActorsPool<AsteroidActor>();
   final mojahersPool = ActorsPool<MojaherActor>();
   final cannonsPool = ActorsPool<CannonActor>();
-
+  
   @override
   Future<void> onLoad() async {
     final space = await riveComponentService.loadRiveComponent(this);
@@ -137,8 +138,8 @@ class Level extends World
   @override
   void update(double dt) {
     if (game.isPaused) return;
-    final gameStats = FlyGame.ref.read(gameStatsProvider);
-    if (!gameStats.isGameOver) {
+    
+    if (!game.isGameOver.value) {
       _spawnEnemy();
       _spawnMojaher();
       if (game.plane.firing) {
@@ -180,7 +181,7 @@ class Level extends World
       return;
     }
 
-    if (!gameStats.isGameStarted || gameStats.isGameOver) {
+    if (!gameStats.isGameStarted || game.isGameOver.value) {
       return;
     }
 
@@ -243,4 +244,5 @@ class Level extends World
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     return false;
   }
+
 }

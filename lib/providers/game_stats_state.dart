@@ -6,9 +6,7 @@ part 'game_stats_state.freezed.dart';
 @Freezed(toJson: false, fromJson: false)
 abstract class GameStatsState with _$GameStatsState {
   factory GameStatsState({
-    @Default(false) bool isGameOver,
     @Default(false) bool isGameStarted,
-    @Default(0) int score,
     @Default(Config.minClipSize) int clipSize,
     @Default(Config.startLives) int lives,
     @Default(0) int asteroidCount,

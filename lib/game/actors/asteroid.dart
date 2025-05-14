@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flame/collisions.dart';
-import 'package:flame/components.dart' hide Plane;
+import 'package:flame/components.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/game/actors/cannon.dart';
@@ -27,8 +27,6 @@ class AsteroidActor extends PositionComponent
   late SMIBool isDestroyed;
 
   bool isVisible = false;
-
-  static final Random _random = Random();
 
   final ActorsPool<AsteroidActor> asteroidsPool;
 
@@ -63,10 +61,8 @@ class AsteroidActor extends PositionComponent
       return;
     }
 
-    if (position.y > Consts.windowSize.height + Consts.asteroidSize.y) {
-      if (!isDestroyed.value) {
-        FlyGame.ref.read(gameStatsProvider.notifier).decreaseScore();
-      }
+    if (position.y > Consts.windowSize.height + actorSize.y) {
+  
       position = _startPosition();
     } else {
       final speed = FlyGame.ref.read(gameStatsProvider).asteroidSpeed;
@@ -105,14 +101,14 @@ class AsteroidActor extends PositionComponent
     if (other is CannonActor) {
       destroyAsteroid();
       other.destroy();
-      FlyGame.ref.read(gameStatsProvider.notifier).increaseScore();
+      game.increaseScore();
     } else if (other is PlaneActor) {
       destroyAsteroid();
       other.hitTrigger.fire();
-      FlyGame.ref.read(gameStatsProvider.notifier).decreaseLive();
+      game.minusLife();
     }
   }
 
   Vector2 _startPosition() =>
-      Vector2(35 + _random.nextInt(500).toDouble(), -100);
+      Vector2(35 + Random().nextInt(500).toDouble(), -100);
 }

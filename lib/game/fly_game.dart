@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:learning_flame/consts.dart';
+import 'package:learning_flame/game/config.dart';
 import 'package:learning_flame/game/levels/level.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -17,8 +18,12 @@ class FlyGame extends FlameGame
 
   bool isPaused = false;
 
-  // Add a static ref for global access (not best practice, but works for Flame integration)
   static late WidgetRef ref;
+
+  ValueNotifier<bool> isGameOver = ValueNotifier(false);
+  ValueNotifier<int> lives = ValueNotifier(Config.startLives);
+  ValueNotifier<int> score = ValueNotifier(0);
+  ValueNotifier<int> clipSize = ValueNotifier(Config.minClipSize);
 
   FlyGame(WidgetRef refInstance) {
     ref = refInstance;
@@ -65,5 +70,26 @@ class FlyGame extends FlameGame
       return KeyEventResult.handled;
     }
     return super.onKeyEvent(event, keysPressed);
+  }
+
+  void minusLife() {
+    lives.value = lives.value - 1;
+    if (lives.value < 0) {
+      isGameOver.value = true;
+    }
+  }
+
+  void increaseScore({int amount = 1}) {
+    score.value = score.value + amount;
+  }
+
+  void decreaseScore({int amount = 1}) {
+    score.value = score.value - amount;
+  }
+
+  void increaseClipSize() {
+    if (clipSize.value < Config.maxClipSize) {
+      clipSize.value = clipSize.value + 1;
+    }
   }
 }

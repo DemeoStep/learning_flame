@@ -1,0 +1,53 @@
+import 'dart:math';
+
+import 'package:learning_flame/consts.dart';
+import 'package:learning_flame/core/di.dart';
+import 'package:learning_flame/game/actors/actor.dart';
+import 'package:flame/collisions.dart';
+import 'package:flame/components.dart';
+import 'package:learning_flame/game/fly_game.dart';
+
+class PowerUp extends PositionComponent
+    with HasGameReference<FlyGame>, CollisionCallbacks
+    implements Actor {
+
+  @override
+  final String artBoardName = Consts.powerUpArtBoardName;
+
+  @override
+  final String stateMachineName = Consts.powerUpStateMachineName;
+
+  @override
+  final Vector2 actorSize = Consts.powerUpSize;
+
+  late RectangleHitbox hitBox;
+
+  @override
+  Future<void> onLoad() async {
+    position = _startPosition();
+
+    final powerUp = await riveComponentService.loadRiveComponent(this);
+
+    hitBox = RectangleHitbox(size: powerUp.size);
+
+    add(powerUp);
+    add(hitBox);
+
+    await super.onLoad();
+  }
+
+  @override
+  void update(double dt) {
+    if (position.y > Consts.windowSize.height + Consts.asteroidSize.y) {
+  
+      position = _startPosition();
+    } else {
+      final speed = 50;
+      position.add(Vector2(0, speed * dt));
+    }
+    super.update(dt);
+  }
+
+  Vector2 _startPosition() =>
+      Vector2(35 + Random().nextInt(500).toDouble(), -100);
+}
