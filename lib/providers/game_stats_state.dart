@@ -14,6 +14,7 @@ abstract class GameStatsState with _$GameStatsState {
     @Default(0) int asteroidCount,
     @Default(0) int mojaherCount,
     @Default(Config.minAsteroidSpeed) int asteroidSpeed,
+    @Default(Config.minMojaherSpeed) int mojaherSpeed,
     @Default(Config.minCannonSpeed) int cannonSpeed,
     @Default(Config.maxCannonReloadTime) int cannonReloadTime,
     @Default(Config.minPlaneSpeed) int planeSpeed,

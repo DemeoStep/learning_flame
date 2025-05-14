@@ -63,13 +63,13 @@ class MojaherActor extends PositionComponent
       return;
     }
 
-    if (position.y > Consts.windowSize.height + Consts.asteroidSize.y) {
+    if (position.y > Consts.windowSize.height + Consts.mojaherSize.y) {
       if (!isDestroyed.value) {
         FlyGame.ref.read(gameStatsProvider.notifier).decreaseScore();
       }
       position = startPosition();
     } else {
-      final speed = FlyGame.ref.read(gameStatsProvider).asteroidSpeed;
+      final speed = FlyGame.ref.read(gameStatsProvider).mojaherSpeed;
       position.add(Vector2(0, speed * dt));
     }
     super.update(dt);

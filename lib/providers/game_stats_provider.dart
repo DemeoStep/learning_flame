@@ -54,12 +54,16 @@ class GameStatsNotifier extends StateNotifier<GameStatsState> {
       state = state.copyWith(asteroidSpeed: speed);
 
   void _makeCalculations(int score) {
+    final gamingTimeMinutes =
+        DateTime.now().difference(state.gameStartTime).inMinutes;
+
     state = state.copyWith(
       score: score,
       planeSpeed: _calculatePlaneSpeed(score),
       cannonSpeed: _calculateCannonSpeed(score),
       cannonReloadTime: _calculateCannonReloadTime(score),
-      asteroidSpeed: _calculateAsteroidSpeed(),
+      asteroidSpeed: _calculateAsteroidSpeed(gamingTimeMinutes),
+      mojaherSpeed: _calculateMojaherSpeed(gamingTimeMinutes),
       clipSize: _calculateClipSize(score),
     );
   }
@@ -82,11 +86,14 @@ class GameStatsNotifier extends StateNotifier<GameStatsState> {
     return result < 100 ? 100 : result;
   }
 
-  int _calculateAsteroidSpeed() {
-    final gamingTimeMinutes =
-        DateTime.now().difference(state.gameStartTime).inMinutes;
+  int _calculateAsteroidSpeed(int gamingTimeMinutes) {
+    return Config.minAsteroidSpeed + (gamingTimeMinutes.clamp(0, 6) ~/ 10) * 10;
+  }
 
-    return 100 + (gamingTimeMinutes.clamp(0, 6) ~/ 10) * 10;
+  int _calculateMojaherSpeed(int gamingTimeMinutes) {
+    final result =
+        Config.minMojaherSpeed + (gamingTimeMinutes.clamp(0, 6) ~/ 10) * 10;
+    return result.clamp(Config.minMojaherSpeed, Config.maxMojaherSpeed);
   }
 
   int _calculateClipSize(int score) {

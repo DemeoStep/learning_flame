@@ -22,7 +22,7 @@ class Consts {
   static Vector2 planeSize = Vector2(60, 100);
   static Vector2 cannonSize = Vector2(5, 10);
   static Vector2 asteroidSize = Vector2(30, 30);
-  static Vector2 mojaherSize = Vector2(34, 16);
+  static Vector2 mojaherSize = Vector2(50, 24);
 
   // Pause key
   static const pauseKey = LogicalKeyboardKey.keyP;
