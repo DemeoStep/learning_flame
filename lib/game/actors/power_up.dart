@@ -10,7 +10,6 @@ import 'package:learning_flame/game/fly_game.dart';
 class PowerUp extends PositionComponent
     with HasGameReference<FlyGame>, CollisionCallbacks
     implements Actor {
-
   @override
   final String artBoardName = Consts.powerUpArtBoardName;
 
@@ -21,6 +20,8 @@ class PowerUp extends PositionComponent
   final Vector2 actorSize = Consts.powerUpSize;
 
   late RectangleHitbox hitBox;
+
+  bool isVisible = false;
 
   @override
   Future<void> onLoad() async {
@@ -38,9 +39,14 @@ class PowerUp extends PositionComponent
 
   @override
   void update(double dt) {
+    if (!isVisible) {
+      return;
+    }
+
     if (position.y > Consts.windowSize.height + Consts.asteroidSize.y) {
-  
+      isVisible = false;
       position = _startPosition();
+      game.increaseClipSize();
     } else {
       final speed = 50;
       position.add(Vector2(0, speed * dt));

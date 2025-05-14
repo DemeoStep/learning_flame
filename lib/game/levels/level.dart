@@ -12,6 +12,7 @@ import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/game/actors/cannon.dart';
 import 'package:learning_flame/game/actors/mojaher.dart';
 import 'package:learning_flame/game/actors/plane.dart';
+import 'package:learning_flame/game/actors/power_up.dart';
 import 'package:learning_flame/game/config.dart';
 import 'package:learning_flame/game/fly_game.dart';
 import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
@@ -40,7 +41,9 @@ class Level extends World
   final asteroidsPool = ActorsPool<AsteroidActor>();
   final mojahersPool = ActorsPool<MojaherActor>();
   final cannonsPool = ActorsPool<CannonActor>();
-  
+
+  final powerUp = PowerUp();
+
   @override
   Future<void> onLoad() async {
     final space = await riveComponentService.loadRiveComponent(this);
@@ -68,6 +71,10 @@ class Level extends World
     addAll(cannonsPool.pool);
     addAll(asteroidsPool.pool);
     addAll(mojahersPool.pool);
+
+    add(powerUp);
+
+    powerUp.isVisible = true;
 
     _scheduleNextMojaherSpawn();
 
@@ -138,7 +145,7 @@ class Level extends World
   @override
   void update(double dt) {
     if (game.isPaused) return;
-    
+
     if (!game.isGameOver.value) {
       _spawnEnemy();
       _spawnMojaher();
@@ -154,7 +161,7 @@ class Level extends World
   void _spawnCannon() {
     final gameStats = FlyGame.ref.read(gameStatsProvider);
     final activeCount = cannonsPool.activeCount;
-    final maxCannons = gameStats.clipSize;
+    final maxCannons = game.clipSize.value;
     final now = DateTime.now().millisecondsSinceEpoch;
 
     if (now - _lastFiredTimestamp < gameStats.cannonReloadTime) {
@@ -244,5 +251,4 @@ class Level extends World
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     return false;
   }
-
 }

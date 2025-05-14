@@ -164,7 +164,7 @@ class _ScoreOverlayState extends ConsumerState<ScoreOverlay> {
                     spacing: 5,
                     children: [
                       ...List.generate(
-                        state.clipSize - value,
+                        widget.game.clipSize.value - value,
                         (index) => cannonSvg,
                       ),
                       ...List.generate(

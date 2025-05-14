@@ -7,7 +7,6 @@ part 'game_stats_state.freezed.dart';
 abstract class GameStatsState with _$GameStatsState {
   factory GameStatsState({
     @Default(false) bool isGameStarted,
-    @Default(Config.minClipSize) int clipSize,
     @Default(Config.startLives) int lives,
     @Default(0) int asteroidCount,
     @Default(0) int mojaherCount,

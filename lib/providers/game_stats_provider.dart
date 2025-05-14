@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:learning_flame/game/config.dart';
 import 'package:learning_flame/providers/game_stats_state.dart';
 
 class GameStatsNotifier extends StateNotifier<GameStatsState> {
@@ -14,7 +13,7 @@ class GameStatsNotifier extends StateNotifier<GameStatsState> {
   void setAsteroidCount(int count) =>
       state = state.copyWith(asteroidCount: count);
 
-  void setClipSize(int size) => state = state.copyWith(clipSize: size);
+  //void setClipSize(int size) => state = state.copyWith(clipSize: size);
 
   void setPlaneSpeed(int speed) => state = state.copyWith(planeSpeed: speed);
 
@@ -45,18 +44,18 @@ class GameStatsNotifier extends StateNotifier<GameStatsState> {
   //   );
   // }
 
-  int _calculatePlaneSpeed(int score) {
-    return 100 + (score.clamp(0, 200) ~/ 10) * 10;
-  }
+  // int _calculatePlaneSpeed(int score) {
+  //   return 100 + (score.clamp(0, 200) ~/ 10) * 10;
+  // }
 
-  int _calculateCannonSpeed(int score) {
-    final result = 100 + (score.clamp(0, 400) ~/ 10) * 10;
-    return result < Config.minCannonSpeed
-        ? Config.minCannonSpeed
-        : result > Config.maxCannonSpeed
-        ? Config.maxCannonSpeed
-        : result;
-  }
+  // int _calculateCannonSpeed(int score) {
+  //   final result = 100 + (score.clamp(0, 400) ~/ 10) * 10;
+  //   return result < Config.minCannonSpeed
+  //       ? Config.minCannonSpeed
+  //       : result > Config.maxCannonSpeed
+  //       ? Config.maxCannonSpeed
+  //       : result;
+  // }
 
   // int _calculateCannonReloadTime(int score) {
   //   final result = 300 - (score.clamp(0, 400) ~/ 10) * 5;
