@@ -115,9 +115,12 @@ class _ScoreOverlayState extends ConsumerState<ScoreOverlay> {
                       builder: (context, value, _) {
                         return Text(
                           value.toString(),
-                          style: const TextStyle(fontSize: 20, color: Colors.white),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
                         );
-                      }
+                      },
                     ),
                     const Gap(20),
                     const Text(
@@ -125,9 +128,17 @@ class _ScoreOverlayState extends ConsumerState<ScoreOverlay> {
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                     const Gap(5),
-                    Text(
-                      state.planeSpeed.toString(),
-                      style: const TextStyle(fontSize: 20, color: Colors.white),
+                    ValueListenableBuilder(
+                      valueListenable: widget.game.planeSpeed,
+                      builder: (context, value, _) {
+                        return Text(
+                          value.toString(),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
                     ),
                     const Gap(20),
                     const Text(

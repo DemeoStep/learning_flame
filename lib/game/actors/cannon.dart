@@ -48,7 +48,7 @@ class CannonActor extends PositionComponent
       return;
     }
 
-    final speed = FlyGame.ref.read(gameStatsProvider).cannonSpeed;
+    final speed = game.cannonSpeed.value;
     if (position.y < 0) {
       destroy();
     } else {

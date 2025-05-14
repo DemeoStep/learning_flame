@@ -4,27 +4,15 @@ import 'package:learning_flame/providers/game_stats_state.dart';
 class GameStatsNotifier extends StateNotifier<GameStatsState> {
   GameStatsNotifier() : super(GameStatsState(gameStartTime: DateTime.now()));
 
-  // void increaseLive() => state = state.copyWith(lives: state.lives + 1);
-
-  void decreaseLive() {
-    state = state.copyWith(lives: state.lives - 1);
-  }
 
   void setAsteroidCount(int count) =>
       state = state.copyWith(asteroidCount: count);
-
-  //void setClipSize(int size) => state = state.copyWith(clipSize: size);
-
-  void setPlaneSpeed(int speed) => state = state.copyWith(planeSpeed: speed);
 
   void setGameStarted(bool isGameStarted) =>
       state = state.copyWith(isGameStarted: isGameStarted);
 
   void setGameStartTime(DateTime time) =>
       state = state.copyWith(gameStartTime: time);
-
-  void setCannonReloadTime(int ms) =>
-      state = state.copyWith(cannonReloadTime: ms);
 
   void setAsteroidSpeed(int speed) =>
       state = state.copyWith(asteroidSpeed: speed);

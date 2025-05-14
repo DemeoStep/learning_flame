@@ -28,7 +28,7 @@ class PlaneActor extends PositionComponent
   bool firing = false;
 
   FlyDirection flyDirection = FlyDirection.none;
-  int _speed = 100;
+  
   final startPosition = Vector2(250, 490);
 
   @override
@@ -59,19 +59,19 @@ class PlaneActor extends PositionComponent
 
   @override
   update(double dt) {
-    _speed = FlyGame.ref.read(gameStatsProvider).planeSpeed;
+    final speed = game.planeSpeed.value;
     switch (flyDirection) {
       case FlyDirection.left:
         if (position.x < 0) {
           flyDirection = FlyDirection.none;
         } else {
-          position.add(Vector2(-_speed * dt, 0));
+          position.add(Vector2(-speed * dt, 0));
         }
       case FlyDirection.right:
         if (position.x + Consts.planeSize.x > Consts.windowSize.width) {
           flyDirection = FlyDirection.none;
         } else {
-          position.add(Vector2(_speed * dt, 0));
+          position.add(Vector2(speed * dt, 0));
         }
       case FlyDirection.none:
         break;

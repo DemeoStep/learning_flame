@@ -5,6 +5,7 @@ import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/actor.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:learning_flame/game/actors/plane.dart';
 import 'package:learning_flame/game/fly_game.dart';
 
 class PowerUp extends PositionComponent
@@ -25,7 +26,7 @@ class PowerUp extends PositionComponent
 
   @override
   Future<void> onLoad() async {
-    position = _startPosition();
+    reset();
 
     final powerUp = await riveComponentService.loadRiveComponent(this);
 
@@ -44,9 +45,7 @@ class PowerUp extends PositionComponent
     }
 
     if (position.y > Consts.windowSize.height + Consts.asteroidSize.y) {
-      isVisible = false;
-      position = _startPosition();
-      game.increaseClipSize();
+      reset();
     } else {
       final speed = 50;
       position.add(Vector2(0, speed * dt));
@@ -54,6 +53,24 @@ class PowerUp extends PositionComponent
     super.update(dt);
   }
 
+  @override
+  void onCollisionStart(
+    Set<Vector2> intersectionPoints,
+    PositionComponent other,
+  ) {
+    super.onCollisionStart(intersectionPoints, other);
+
+    if (other is PlaneActor) {
+      reset();
+      game.powerUp();
+    }
+  }
+
+  void reset() {
+    isVisible = false;
+    position = _startPosition();
+  }
+
   Vector2 _startPosition() =>
-      Vector2(35 + Random().nextInt(500).toDouble(), -100);
+      Vector2(35 + Random().nextInt(500).toDouble(), -50);
 }

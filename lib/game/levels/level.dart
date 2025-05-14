@@ -38,6 +38,10 @@ class Level extends World
   int _nextMojaherIntervalMs = 5000;
   final Random _random = Random();
 
+  DateTime? _lastPowerUpSpawnedDateTime;
+  static const int powerUpMinIntervalSeconds = 10; // 0.5 minute
+  static const int powerUpMaxIntervalSeconds = 30; // up to 1 minutes
+
   final asteroidsPool = ActorsPool<AsteroidActor>();
   final mojahersPool = ActorsPool<MojaherActor>();
   final cannonsPool = ActorsPool<CannonActor>();
@@ -74,9 +78,8 @@ class Level extends World
 
     add(powerUp);
 
-    powerUp.isVisible = true;
-
     _scheduleNextMojaherSpawn();
+    _spawnPowerUp();
 
     // Set game as started and set start time
     FlyGame.ref.read(gameStatsProvider.notifier).setGameStarted(true);
@@ -147,8 +150,9 @@ class Level extends World
     if (game.isPaused) return;
 
     if (!game.isGameOver.value) {
-      _spawnEnemy();
+      _spawnAsteroid();
       _spawnMojaher();
+      _spawnPowerUp();
       if (game.plane.firing) {
         _spawnCannon();
       }
@@ -159,12 +163,11 @@ class Level extends World
   }
 
   void _spawnCannon() {
-    final gameStats = FlyGame.ref.read(gameStatsProvider);
     final activeCount = cannonsPool.activeCount;
     final maxCannons = game.clipSize.value;
     final now = DateTime.now().millisecondsSinceEpoch;
 
-    if (now - _lastFiredTimestamp < gameStats.cannonReloadTime) {
+    if (now - _lastFiredTimestamp < game.cannonReloadTime.value) {
       return;
     }
 
@@ -178,7 +181,7 @@ class Level extends World
     }
   }
 
-  void _spawnEnemy() {
+  void _spawnAsteroid() {
     final now = DateTime.now();
     final gameStats = FlyGame.ref.read(gameStatsProvider);
     final timeSinceLastSpawn =
@@ -231,6 +234,39 @@ class Level extends World
         mojaher.isVisible = true;
       }
     }
+  }
+
+  void _spawnPowerUp() {
+    final now = DateTime.now();
+
+    if (_lastPowerUpSpawnedDateTime == null) {
+      _lastPowerUpSpawnedDateTime = now.add(
+        Duration(
+          seconds:
+              powerUpMinIntervalSeconds +
+              _random.nextInt(
+                powerUpMaxIntervalSeconds - powerUpMinIntervalSeconds + 1,
+              ),
+        ),
+      );
+      return;
+    }
+
+    if (now.isBefore(_lastPowerUpSpawnedDateTime!)) {
+      return;
+    }
+    
+    powerUp.isVisible = true;
+
+    _lastPowerUpSpawnedDateTime = now.add(
+      Duration(
+        seconds:
+            powerUpMinIntervalSeconds +
+            _random.nextInt(
+              powerUpMaxIntervalSeconds - powerUpMinIntervalSeconds + 1,
+            ),
+      ),
+    );
   }
 
   void _removeResources() {

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
@@ -24,6 +26,11 @@ class FlyGame extends FlameGame
   ValueNotifier<int> lives = ValueNotifier(Config.startLives);
   ValueNotifier<int> score = ValueNotifier(0);
   ValueNotifier<int> clipSize = ValueNotifier(Config.minClipSize);
+  ValueNotifier<int> cannonSpeed = ValueNotifier(Config.minCannonSpeed);
+  ValueNotifier<int> cannonReloadTime = ValueNotifier(
+    Config.maxCannonReloadTime,
+  );
+  ValueNotifier<int> planeSpeed = ValueNotifier(Config.minPlaneSpeed);
 
   FlyGame(WidgetRef refInstance) {
     ref = refInstance;
@@ -87,9 +94,58 @@ class FlyGame extends FlameGame
     score.value = score.value - amount;
   }
 
-  void increaseClipSize() {
+  void powerUp() {
+    final random = Random().nextInt(4);
+
+    switch (random) {
+      case 0:
+        _increaseClipSize();
+        break;
+      case 1:
+        _increaseCannonSpeed();
+        break;
+      case 2:
+        _increaseCannonReloadTime();
+        break;
+      case 3:
+        _increasePlaneSpeed();
+        break;
+    }
+  }
+
+  void _increaseClipSize() {
     if (clipSize.value < Config.maxClipSize) {
       clipSize.value = clipSize.value + 1;
+      print('clipSize: ${clipSize.value}');
+    } else {
+      powerUp();
+    }
+  }
+
+  void _increaseCannonSpeed() {
+    if (cannonSpeed.value < Config.maxCannonSpeed) {
+      cannonSpeed.value = cannonSpeed.value + 10;
+      print('cannonSpeed: ${cannonSpeed.value}');
+    } else {
+      powerUp();
+    }
+  }
+
+  void _increaseCannonReloadTime() {
+    if (cannonReloadTime.value > Config.minCannonReloadTime) {
+      cannonReloadTime.value = cannonReloadTime.value - 10;
+      print('cannonReloadTime: ${cannonReloadTime.value}');
+    } else {
+      powerUp();
+    }
+  }
+
+  void _increasePlaneSpeed() {
+    if (planeSpeed.value < Config.maxPlaneSpeed) {
+      planeSpeed.value = planeSpeed.value + 10;
+      print('planeSpeed: ${planeSpeed.value}');
+    } else {
+      powerUp();
     }
   }
 }
