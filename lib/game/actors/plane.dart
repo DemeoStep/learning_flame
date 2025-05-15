@@ -6,8 +6,7 @@ import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/consts.dart';
-import 'package:learning_flame/game/fly_game.dart';
-import 'package:learning_flame/providers/game_stats_provider.dart';
+import 'package:learning_flame/game/game.dart';
 
 class PlaneActor extends PositionComponent
     with
@@ -59,7 +58,7 @@ class PlaneActor extends PositionComponent
 
   @override
   update(double dt) {
-    final speed = game.planeSpeed.value;
+    final speed = game.gameState.planeSpeed;
     switch (flyDirection) {
       case FlyDirection.left:
         if (position.x < 0) {

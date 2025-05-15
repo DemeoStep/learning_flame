@@ -8,9 +8,9 @@ import 'package:learning_flame/game/actors/cannon.dart';
 import 'package:learning_flame/game/actors/plane.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/core/di.dart';
-import 'package:learning_flame/game/fly_game.dart';
+import 'package:learning_flame/game/game.dart';
+import 'package:learning_flame/game/game_state/game_state_modifier.dart';
 import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
-import 'package:learning_flame/providers/game_stats_provider.dart';
 
 class MojaherActor extends PositionComponent
     with HasGameReference<FlyGame>, CollisionCallbacks
@@ -64,7 +64,7 @@ class MojaherActor extends PositionComponent
     if (position.y > Consts.windowSize.height + actorSize.y) {
       position = startPosition();
     } else {
-      final speed = FlyGame.ref.read(gameStatsProvider).mojaherSpeed;
+      final speed = game.gameState.mojaherSpeed;
       position.add(Vector2(0, speed * dt));
     }
     super.update(dt);

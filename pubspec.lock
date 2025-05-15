@@ -34,7 +34,7 @@ packages:
     source: hosted
     version: "2.12.0"
   audioplayers:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: audioplayers
       sha256: a5341380a4f1d3a10a4edde5bb75de5127fe31e0faa8c4d860e64d2f91ad84c7
@@ -265,14 +265,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.5"
-  flame_bloc:
-    dependency: "direct main"
-    description:
-      name: flame_bloc
-      sha256: "56a4dbbbe11b16ec391151f5bca72328a633abd54bd7325e0ba2fa4b687c3085"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.12.12"
   flame_rive:
     dependency: "direct main"
     description:
@@ -302,14 +294,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
-  flutter_riverpod:
-    dependency: "direct main"
-    description:
-      name: flutter_riverpod
-      sha256: "9532ee6db4a943a1ed8383072a2e3eeda041db5657cdf6d2acecf3c21ecbe7e1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.6.1"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -635,14 +619,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.15"
-  riverpod:
-    dependency: transitive
-    description:
-      name: riverpod
-      sha256: "59062512288d3056b2321804332a13ffdd1bf16df70dcc8e506e411280a72959"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.6.1"
   screen_retriever:
     dependency: transitive
     description:
@@ -736,14 +712,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.12.1"
-  state_notifier:
-    dependency: transitive
-    description:
-      name: state_notifier
-      sha256: b8677376aa54f2d7c58280d5a007f9e8774f1968d1fb1c096adcb4792fba29bb
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   stream_channel:
     dependency: transitive
     description:

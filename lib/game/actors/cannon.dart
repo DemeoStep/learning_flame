@@ -4,9 +4,8 @@ import 'package:flame_rive/flame_rive.dart';
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/actor.dart';
-import 'package:learning_flame/game/fly_game.dart';
+import 'package:learning_flame/game/game.dart';
 import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
-import 'package:learning_flame/providers/game_stats_provider.dart';
 
 class CannonActor extends PositionComponent
     with HasGameReference<FlyGame>
@@ -48,7 +47,7 @@ class CannonActor extends PositionComponent
       return;
     }
 
-    final speed = game.cannonSpeed.value;
+    final speed = game.gameState.cannonSpeed;
     if (position.y < 0) {
       destroy();
     } else {

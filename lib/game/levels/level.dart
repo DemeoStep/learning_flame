@@ -14,9 +14,9 @@ import 'package:learning_flame/game/actors/mojaher.dart';
 import 'package:learning_flame/game/actors/plane.dart';
 import 'package:learning_flame/game/actors/power_up.dart';
 import 'package:learning_flame/game/config.dart';
-import 'package:learning_flame/game/fly_game.dart';
+import 'package:learning_flame/game/game.dart';
+import 'package:learning_flame/game/game_state/game_state_modifier.dart';
 import 'package:learning_flame/game/rive_component_pool/rive_component_pool.dart';
-import 'package:learning_flame/providers/game_stats_provider.dart';
 
 class Level extends World
     with HasGameReference<FlyGame>, KeyboardHandler
@@ -81,12 +81,6 @@ class Level extends World
     _scheduleNextMojaherSpawn();
     _spawnPowerUp();
 
-    // Set game as started and set start time
-    FlyGame.ref.read(gameStatsProvider.notifier).setGameStarted(true);
-    FlyGame.ref
-        .read(gameStatsProvider.notifier)
-        .setGameStartTime(DateTime.now());
-
     add(
       KeyboardListenerComponent(
         keyUp: {
@@ -136,6 +130,10 @@ class Level extends World
       ),
     );
 
+    Future.delayed(const Duration(seconds: 2), () {
+      game.setGameStarted();
+    });
+
     return super.onLoad();
   }
 
@@ -147,14 +145,20 @@ class Level extends World
 
   @override
   void update(double dt) {
-    if (game.isPaused) return;
+    if (game.gameState.isPaused) return;
 
-    if (!game.isGameOver.value) {
-      _spawnAsteroid();
-      _spawnMojaher();
-      _spawnPowerUp();
-      if (game.plane.firing) {
-        _spawnCannon();
+    final gameState = game.gameState;
+
+    if (!gameState.isGameOver) {
+      if (gameState.isGameStarted) {
+        _spawnAsteroid();
+        _spawnMojaher();
+        _spawnPowerUp();
+        if (game.plane.firing) {
+          _spawnCannon();
+        }
+      } else {
+        return;
       }
     } else {
       _removeResources();
@@ -164,10 +168,10 @@ class Level extends World
 
   void _spawnCannon() {
     final activeCount = cannonsPool.activeCount;
-    final maxCannons = game.clipSize.value;
+    final maxCannons = game.gameState.clipSize;
     final now = DateTime.now().millisecondsSinceEpoch;
 
-    if (now - _lastFiredTimestamp < game.cannonReloadTime.value) {
+    if (now - _lastFiredTimestamp < game.gameState.cannonReloadTime) {
       return;
     }
 
@@ -182,8 +186,10 @@ class Level extends World
   }
 
   void _spawnAsteroid() {
+    final gameState = game.gameState;
+
     final now = DateTime.now();
-    final gameStats = FlyGame.ref.read(gameStatsProvider);
+
     final timeSinceLastSpawn =
         now.difference(_lastAsteroidSpawnedTime).inMilliseconds;
 
@@ -191,19 +197,13 @@ class Level extends World
       return;
     }
 
-    if (!gameStats.isGameStarted || game.isGameOver.value) {
-      return;
-    }
-
     final targetAsteroidCount = math.min(
       Config.maxAsteroidCount,
-      1 + (now.difference(gameStats.gameStartTime).inMinutes),
+      1 + (now.difference(gameState.gameStartTime).inMinutes),
     );
 
-    if (gameStats.asteroidCount != targetAsteroidCount) {
-      FlyGame.ref
-          .read(gameStatsProvider.notifier)
-          .setAsteroidCount(targetAsteroidCount);
+    if (gameState.asteroidCount != targetAsteroidCount) {
+      gameState.asteroidCountNotifier.value = targetAsteroidCount;
     }
 
     int activeAsteroids = asteroidsPool.activeCount;
@@ -255,7 +255,7 @@ class Level extends World
     if (now.isBefore(_lastPowerUpSpawnedDateTime!)) {
       return;
     }
-    
+
     powerUp.isVisible = true;
 
     _lastPowerUpSpawnedDateTime = now.add(

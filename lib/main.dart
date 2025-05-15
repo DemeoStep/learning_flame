@@ -5,9 +5,8 @@ import 'package:flame/game.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:learning_flame/core/di.dart';
-import 'package:learning_flame/game/fly_game.dart';
+import 'package:learning_flame/game/game.dart';
 import 'package:learning_flame/presentation/score_overlay.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -41,19 +40,20 @@ void main() async {
     }
   }
 
-  runApp(ProviderScope(child: MyApp()));
+  runApp(MyApp());
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends StatelessWidget {
+  
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return MaterialApp(
       showPerformanceOverlay: kDebugMode,
       home: Scaffold(
         body: GameWidget(
-          game: FlyGame(ref),
+          game: FlyGame(),
           overlayBuilderMap: {
             'score': (context, FlyGame game) => ScoreOverlay(game: game),
           },

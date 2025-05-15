@@ -6,7 +6,8 @@ import 'package:learning_flame/game/actors/actor.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:learning_flame/game/actors/plane.dart';
-import 'package:learning_flame/game/fly_game.dart';
+import 'package:learning_flame/game/game.dart';
+import 'package:learning_flame/game/game_state/game_state_modifier.dart';
 
 class PowerUp extends PositionComponent
     with HasGameReference<FlyGame>, CollisionCallbacks
