@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:flame/components.dart' hide Plane;
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:learning_flame/core/di.dart';
 import 'package:learning_flame/game/actors/actor.dart';
 import 'package:learning_flame/game/actors/asteroid.dart';
@@ -145,7 +144,10 @@ class Level extends World
 
   @override
   void update(double dt) {
-    if (game.gameState.isPaused) return;
+  
+    if (game.gameState.isPaused) {
+      return;
+    }
 
     final gameState = game.gameState;
 
@@ -199,12 +201,8 @@ class Level extends World
 
     final targetAsteroidCount = math.min(
       Config.maxAsteroidCount,
-      1 + (now.difference(gameState.gameStartTime).inMinutes),
+      gameState.level,
     );
-
-    if (gameState.asteroidCount != targetAsteroidCount) {
-      gameState.asteroidCountNotifier.value = targetAsteroidCount;
-    }
 
     int activeAsteroids = asteroidsPool.activeCount;
 
@@ -225,7 +223,7 @@ class Level extends World
     }
 
     int activeMojahers = mojahersPool.activeCount;
-    if (activeMojahers < Config.maxMojaherCount && mojahersPool.poolSize > 0) {
+    if (activeMojahers < game.gameState.mojaherCount && mojahersPool.poolSize > 0) {
       _lastMojaherSpawnedTimestamp = now;
       _scheduleNextMojaherSpawn();
       final mojaher = mojahersPool.fromPool();

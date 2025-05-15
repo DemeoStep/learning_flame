@@ -7,10 +7,35 @@ extension GameStateModifier on FlyGame {
   void setGameStarted() {
     gameState.isGameStartedNotifier.value = true;
     gameState.gameStartTime = DateTime.now();
+    levelUp();
+  }
+
+  void switchGamePaused() {
+    gameState.isPausedNotifier.value = !gameState.isPaused;
+  }
+
+  void levelUp() {
+    gameState.levelNotifier.value = gameState.level + 1;
+    addAsteroid();
+    if (gameState.level > 2) {
+      addMojaher();
+    }
   }
 
   void setGameOver() {
     gameState.isGameOverNotifier.value = true;
+  }
+
+  void addAsteroid() {
+    if (gameState.asteroidCount < Config.maxAsteroidCount) {
+      gameState.asteroidCountNotifier.value = gameState.asteroidCount + 1;
+    }
+  }
+
+  void addMojaher() {
+    if (gameState.mojaherCount < Config.maxMojaherCount) {
+      gameState.mojaherCountNotifier.value = gameState.mojaherCount + 1;
+    }
   }
 
   void minusLife() {
@@ -29,57 +54,68 @@ extension GameStateModifier on FlyGame {
   }
 
   void powerUp() {
-    final random = Random().nextInt(4);
+    final availablePowerUps = <PowerUpType>[];
 
-    switch (random) {
-      case 0:
+    for (final powerUp in PowerUpType.values) {
+      switch (powerUp) {
+        case PowerUpType.clipSize:
+          if (gameState.clipSize < Config.maxClipSize) {
+            availablePowerUps.add(powerUp);
+          }
+        case PowerUpType.cannonSpeed:
+          if (gameState.cannonSpeed < Config.maxCannonSpeed) {
+            availablePowerUps.add(powerUp);
+          }
+        case PowerUpType.cannonReloadTime:
+          if (gameState.cannonReloadTime > Config.minCannonReloadTime) {
+            availablePowerUps.add(powerUp);
+          }
+        case PowerUpType.planeSpeed:
+          if (gameState.planeSpeed < Config.maxPlaneSpeed) {
+            availablePowerUps.add(powerUp);
+          }
+      }
+    }
+
+    if (availablePowerUps.isEmpty) {
+      return;
+    }
+
+    final powerUp =
+        availablePowerUps[Random().nextInt(availablePowerUps.length)];
+
+    switch (powerUp) {
+      case PowerUpType.clipSize:
         _increaseClipSize();
-        break;
-      case 1:
+      case PowerUpType.cannonSpeed:
         _increaseCannonSpeed();
-        break;
-      case 2:
+      case PowerUpType.cannonReloadTime:
         _increaseCannonReloadTime();
-        break;
-      case 3:
+      case PowerUpType.planeSpeed:
         _increasePlaneSpeed();
-        break;
     }
   }
 
   void _increaseClipSize() {
-    if (gameState.clipSizeNotifier.value < Config.maxClipSize) {
-      gameState.clipSizeNotifier.value = gameState.clipSize + 1;
-      print('clipSize: ${gameState.clipSize}');
-    } else {
-      powerUp();
-    }
+    gameState.clipSizeNotifier.value = gameState.clipSize + 1;
+    gameState.powerUpNotifier.value = 'Clip size: ${gameState.clipSize}';
   }
 
   void _increaseCannonSpeed() {
-    if (gameState.cannonSpeedNotifier.value < Config.maxCannonSpeed) {
-      gameState.cannonSpeedNotifier.value = gameState.cannonSpeed + 10;
-      print('cannonSpeed: ${gameState.cannonSpeed}');
-    } else {
-      powerUp();
-    }
+    gameState.cannonSpeedNotifier.value = gameState.cannonSpeed + 10;
+    gameState.powerUpNotifier.value = 'Cannon speed: ${gameState.cannonSpeed}';
   }
 
   void _increaseCannonReloadTime() {
-    if (gameState.cannonReloadTimeNotifier.value > Config.minCannonReloadTime) {
-      gameState.cannonReloadTimeNotifier.value = gameState.cannonReloadTime - 10;
-      print('cannonReloadTime: ${gameState.cannonReloadTime}');
-    } else {
-      powerUp();
-    }
+    gameState.cannonReloadTimeNotifier.value = gameState.cannonReloadTime - 10;
+    gameState.powerUpNotifier.value =
+        'Cannon reload time: ${gameState.cannonReloadTime}';
   }
 
   void _increasePlaneSpeed() {
-    if (gameState.planeSpeedNotifier.value < Config.maxPlaneSpeed) {
-      gameState.planeSpeedNotifier.value = gameState.planeSpeed + 10;
-      print('planeSpeed: ${gameState.planeSpeed}');
-    } else {
-      powerUp();
-    }
+    gameState.planeSpeedNotifier.value = gameState.planeSpeed + 10;
+    gameState.powerUpNotifier.value = 'Plane speed: ${gameState.planeSpeed}';
   }
 }
+
+enum PowerUpType { clipSize, cannonSpeed, cannonReloadTime, planeSpeed }

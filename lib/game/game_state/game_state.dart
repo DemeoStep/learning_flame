@@ -4,6 +4,9 @@ import 'package:learning_flame/game/config.dart';
 class GameState {
   DateTime gameStartTime = DateTime.now();
 
+  ValueNotifier<int> levelNotifier = ValueNotifier(0);
+  int get level => levelNotifier.value;
+
   ValueNotifier<bool> isGameStartedNotifier = ValueNotifier(false);
   bool get isGameStarted => isGameStartedNotifier.value;
 
@@ -39,6 +42,12 @@ class GameState {
   ValueNotifier<int> asteroidSpeedNotifier = ValueNotifier(Config.minAsteroidSpeed);
   int get asteroidSpeed => asteroidSpeedNotifier.value;
 
+  ValueNotifier<int> mojaherCountNotifier = ValueNotifier(0);
+  int get mojaherCount => mojaherCountNotifier.value;
+
   ValueNotifier<int> mojaherSpeedNotifier = ValueNotifier(Config.minMojaherSpeed);
   int get mojaherSpeed => mojaherSpeedNotifier.value;
+
+  ValueNotifier<String> powerUpNotifier = ValueNotifier('');
+  String get powerUp => powerUpNotifier.value;
 }

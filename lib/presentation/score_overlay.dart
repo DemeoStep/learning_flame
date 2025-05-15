@@ -19,16 +19,20 @@ class ScoreOverlay extends StatefulWidget {
 }
 
 class _ScoreOverlayState extends State<ScoreOverlay> {
-  SMITrigger? _messageShowTrigger;
-  SMITrigger? _messageHideTrigger;
+  SMITrigger? _bigMessageShowTrigger;
+  SMITrigger? _bigMessageHideTrigger;
 
-  late final RiveAnimation messageAnimation;
+  SMITrigger? _smallMessageShowTrigger;
+
+  late final RiveAnimation bigMessageAnimation;
+  late final RiveAnimation smallMessageAnimation;
   late final SvgPicture planeSvg;
   late final SvgPicture cannonSvg;
 
   late final GameState state;
 
   TextValueRun? levelValue;
+  TextValueRun? smallMessageValue;
 
   int level = 0;
 
@@ -50,11 +54,18 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
       colorFilter: const ColorFilter.mode(Colors.white54, BlendMode.srcIn),
     );
 
-    messageAnimation = RiveAnimation.direct(
+    bigMessageAnimation = RiveAnimation.direct(
       riveComponentService.file,
       artboard: 'Message',
       stateMachines: ['MessageSM'],
-      onInit: _onInit,
+      onInit: (artboard) => _onMessageInit(artboard, true),
+    );
+
+    smallMessageAnimation = RiveAnimation.direct(
+      riveComponentService.file,
+      artboard: 'SmallMessage',
+      stateMachines: ['SmallMessageSM'],
+      onInit: (artboard) => _onMessageInit(artboard, false),
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -62,7 +73,7 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
         final isGameOver = state.isGameOver;
         if (isGameOver) {
           levelValue?.text = 'Game Over';
-          _messageShowTrigger?.fire();
+          _bigMessageShowTrigger?.fire();
         }
       });
 
@@ -70,40 +81,53 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
         final isPaused = state.isPaused;
         if (isPaused) {
           levelValue?.text = 'Paused';
-          _messageShowTrigger?.fire();
+          _bigMessageShowTrigger?.fire();
         } else {
-          _messageHideTrigger?.fire();
+          _bigMessageHideTrigger?.fire();
         }
       });
 
-      state.asteroidCountNotifier.addListener(() {
-        final gameLevel = state.asteroidCount;
+      state.levelNotifier.addListener(() {
+        final gameLevel = state.level;
         if (gameLevel > level) {
           if (levelValue != null) {
-            level = state.asteroidCount;
+            level = state.level;
             levelValue?.text = 'Level $level';
-            _messageShowTrigger?.fire();
+            _bigMessageShowTrigger?.fire();
             Future.delayed(const Duration(seconds: 2), () {
-              _messageHideTrigger?.fire();
+              _bigMessageHideTrigger?.fire();
             });
           }
+        }
+      });
+
+      state.powerUpNotifier.addListener(() {
+        final powerUp = state.powerUp;
+        if (powerUp.isNotEmpty) {
+          smallMessageValue?.text = powerUp;
+          _smallMessageShowTrigger?.fire();
         }
       });
     });
   }
 
-  void _onInit(Artboard artboard) {
+  void _onMessageInit(Artboard artboard, bool bigMessage) {
     final controller = StateMachineController.fromArtboard(
       artboard,
-      'MessageSM',
+      bigMessage ? 'MessageSM' : 'SmallMessageSM',
     );
 
     artboard.addController(controller!);
 
-    levelValue = artboard.component<TextValueRun>('Message')!;
+    if (bigMessage) {
+      levelValue = artboard.component<TextValueRun>('Message')!;
 
-    _messageShowTrigger = controller.getTriggerInput('ShowMessage')!;
-    _messageHideTrigger = controller.getTriggerInput('HideMessage')!;
+      _bigMessageShowTrigger = controller.getTriggerInput('ShowMessage')!;
+      _bigMessageHideTrigger = controller.getTriggerInput('HideMessage')!;
+    } else {
+      smallMessageValue = artboard.component<TextValueRun>('Message')!;
+      _smallMessageShowTrigger = controller.getTriggerInput('Show')!;
+    }
   }
 
   @override
@@ -201,7 +225,8 @@ class _ScoreOverlayState extends State<ScoreOverlay> {
                 },
               ),
             ),
-            Positioned.fill(child: messageAnimation),
+            Positioned.fill(child: bigMessageAnimation),
+            Positioned.fill(child: smallMessageAnimation),
           ],
         ),
       ),

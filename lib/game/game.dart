@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
@@ -8,6 +6,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:learning_flame/consts.dart';
 import 'package:learning_flame/game/game_state/game_state.dart';
+import 'package:learning_flame/game/game_state/game_state_modifier.dart';
 import 'package:learning_flame/game/levels/level.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -46,7 +45,23 @@ class FlyGame extends FlameGame
 
   @override
   void update(double dt) {
-    if (gameState.isPaused) return;
+    if (gameState.isPaused) {
+      gameState.gameStartTime = gameState.gameStartTime.add(
+        Duration(microseconds: (dt * 1000000).toInt()),
+      );
+      return;
+    }
+
+    if (!gameState.isGameOver) {
+      final now = DateTime.now();
+
+      if (gameState.isGameStarted) {
+        if (now.difference(gameState.gameStartTime).inMinutes > gameState.level * 2) {
+          levelUp();
+        }
+      }
+    }
+
     super.update(dt);
   }
 
@@ -57,12 +72,12 @@ class FlyGame extends FlameGame
   ) {
     if (event is KeyDownEvent) {
       if (gameState.isPaused) {
-        gameState.isPausedNotifier.value = false;
+        switchGamePaused();
         if (event.logicalKey == LogicalKeyboardKey.space) {
           return KeyEventResult.handled;
         }
       } else if (event.logicalKey == Consts.pauseKey) {
-        gameState.isPausedNotifier.value = !gameState.isPaused;
+        switchGamePaused();
         return KeyEventResult.handled;
       }
     }
